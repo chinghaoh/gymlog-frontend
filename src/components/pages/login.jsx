@@ -37,7 +37,6 @@ export default function Login() {
     }
 
     const handleSubmit = async () => {
-        setError('')
         if (!validate()) return
 
         const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register'
@@ -46,12 +45,15 @@ export default function Login() {
         try {
             const data = await apiClient(endpoint, {
                 method: 'POST',
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
+                skipRedirect:true
             })
             localStorage.setItem('token', data.token)
-            localStorage.setItem('userId', data.id)
+            localStorage.setItem('userId', data.userId)
             localStorage.setItem('role', data.role)
             localStorage.setItem('email', data.email)
+
+            console.log(data)
             
             if (isLogin) {
                 navigate('/dashboard')
@@ -156,7 +158,7 @@ export default function Login() {
                 <div>
                     <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Email address</label>
                     <input className="input-field" type="email" value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {setEmail(e.target.value); setError('')}}
                         onBlur={() => handleBlur('email')}
                         placeholder="you@example.com" style={inputStyle} />
                     {fieldError('email')}
@@ -166,7 +168,7 @@ export default function Login() {
                 <div>
                     <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Password</label>
                     <input className="input-field" type="password" value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {setPassword(e.target.value); setError('')}}
                         onBlur={() => handleBlur('password')}
                         placeholder="Type in your password" style={inputStyle} />
                     {fieldError('password')}

@@ -14,6 +14,15 @@ export async function apiClient(endpoint, options = {}) {
     headers,
   })
 
+  if (response.status === 401 && !options.skipRedirect) {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userId')
+    localStorage.removeItem('role')
+    localStorage.removeItem('email')
+    window.location.href = '/login'
+    return
+  }
+
   if (!response.ok) {
     const error = await response.json()
     throw new Error(error.message || 'Something went wrong')
