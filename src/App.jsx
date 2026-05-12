@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Sidebar from './components/layout/Sidebar'
 import Login from './components/pages/login'
 import Dashboard from './components/pages/dashboard'
+import Workouts from './components/pages/workouts'
 
 export default function App() {
   return (
@@ -15,7 +16,7 @@ export default function App() {
             <div style={{ flex: 1, padding: 20, color: 'var(--text-primary)' }}>
               <Routes>
                 <Route path="/dashboard" element={<Dashboard/>} />
-                <Route path="/workouts"  element={<div>Workouts</div>} />
+                <Route path="/workouts"  element={<Workouts/>} />
                 <Route path="/exercises" element={<div>Exercises</div>} />
                 <Route path="/records"   element={<div>Records</div>} />
                 <Route path="/stats"     element={<div>Stats</div>} />
