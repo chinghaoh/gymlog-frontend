@@ -12,12 +12,17 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
   const [notes, setNotes] = useState('')
 
   const handleSubmit = async () => {
-    if (!name || !durationMinutes || !energyLevel) return
+    if (!name || !durationMinutes) return
 
     try {
       const newWorkout = await apiClient(`/api/workouts?userId=${user.id}`, {
         method: 'POST',
-        body: JSON.stringify({ name, splitCategory, date, durationMinutes: Number(durationMinutes), energyLevel: Number(energyLevel), notes })
+        body: JSON.stringify({
+          name,
+          splitCategory,
+          durationMinutes: Number(durationMinutes),
+          notes
+        })
       })
       onCreated(newWorkout)
       onClose()
@@ -55,11 +60,6 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Date</label>
-            <input className="input-field" type="date" value={date} onChange={e => setDate(e.target.value)} style={inputStyle} />
           </div>
 
           <div style={{ display: 'flex', gap: 8 }}>
