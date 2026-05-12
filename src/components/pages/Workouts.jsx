@@ -3,11 +3,26 @@ import { apiClient } from '../../lib/ApiClient'
 import { useAuth } from '../context/AuthContext'
 import FilterPills from '../ui/FilterPills'
 import Pagination from '../ui/Pagination'
+import WorkoutModal from '../ui/WorkoutModal'
+import CreateWorkoutModal from '../ui/CreateWorkoutModal'
 
 export default function Workouts() {
   const { user } = useAuth()
   const [workouts, setWorkouts] = useState([])
   const [activeFilter, setActiveFilter] = useState('All')
+  const [selectedWorkout, setSelectedWorkout] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isNewWorkoutModalOpen, setIsNewWorkoutModalOpen] = useState(false)
+
+  const openModal = (workout) => {
+    setSelectedWorkout(workout)
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setSelectedWorkout(null)
+    setIsModalOpen(false)
+  }
 
   const filters = ['All', 'Push', 'Pull', 'Legs', 'Upper', 'Full Body', 'Cardio']
 
@@ -35,11 +50,13 @@ export default function Workouts() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
         <h1 style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Workouts</h1>
-        <button style={{
-          background: 'var(--purple)', color: 'white',
-          border: 'none', borderRadius: 7, padding: '8px 16px',
-          fontWeight: 600, cursor: 'pointer'
-        }}>+ New Workout</button>
+        <button
+          onClick={() => setIsNewWorkoutModalOpen(true)}
+          style={{
+            background: 'var(--purple)', color: 'white',
+            border: 'none', borderRadius: 7, padding: '8px 16px',
+            fontWeight: 600, cursor: 'pointer'
+          }}>+ New Workout</button>
       </div>
 
       {/* Filters */}
@@ -67,10 +84,12 @@ export default function Workouts() {
               </tr>
             ) : (
               paginatedWorkouts.map((workout, index) => (
-                <tr key={workout.id} style={{
-                  borderBottom: index === workouts.length - 1 ? 'none' : '0.5px solid var(--border)',
-                  cursor: 'pointer',
-                }}
+                <tr key={workout.id}
+                  onClick={() => openModal(workout)}
+                  style={{
+                    borderBottom: index === workouts.length - 1 ? 'none' : '0.5px solid var(--border)',
+                    cursor: 'pointer',
+                  }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
@@ -90,7 +109,49 @@ export default function Workouts() {
           </tbody>
         </table>
       </div>
-      
+
+      {isModalOpen && (
+        <div
+          onClick={closeModal}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 100
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'var(--bg-card)',
+              border: '0.5px solid var(--border)',
+              borderRadius: 12,
+              width: '100%',
+              maxWidth: 560,
+              maxHeight: '80vh',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <WorkoutModal workout={selectedWorkout} onClose={closeModal} 
+            onUpdated={(updated) => {
+              setWorkouts(prev => prev.map(w => w.id === updated.id ? updated : w))
+            }}
+            onDeleted={() => {
+              setWorkouts(prev => prev.filter(w => w.id !== selectedWorkout.id))
+              closeModal()
+            }}></WorkoutModal>
+          </div>
+        </div>
+      )}
+
+      {isNewWorkoutModalOpen && (
+        <CreateWorkoutModal
+          onClose={() => setIsNewWorkoutModalOpen(false)}
+          onCreated={(newWorkout) => setWorkouts(prev => [newWorkout, ...prev])}
+        />
+      )}
+
       {/* Pagination */}
       <Pagination
         currentPage={currentPage}
