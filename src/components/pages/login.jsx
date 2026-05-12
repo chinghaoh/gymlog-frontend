@@ -1,7 +1,99 @@
 import { useState } from "react"
+import { apiClient } from '../../lib/ApiClient'
+import { useNavigate } from "react-router-dom"
+
 
 export default function Login() {
     const [isLogin, setIsLogin] = useState(true)
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [error, setError] = useState("")
+    const [touched, setTouched] = useState({})
+
+    const navigate = useNavigate()
+
+
+    const handleBlur = (field) => {
+        setTouched(prev => ({ ...prev, [field]: true }))
+    }
+
+    const getFieldError = (field) => {
+        if (!touched[field]) return null
+        if (field === 'email' && !email.includes('@')) return 'Please enter a valid email'
+        if (field === 'password' && password.length < 6) return 'Password must be at least 6 characters'
+        if (field === 'confirmPassword' && password !== confirmPassword) return 'Passwords do not match'
+        if (field === 'name' && name.trim() === '') return 'Please enter your name'
+        return null
+    }
+
+    const validate = () => {
+        if (!email.includes('@')) { setError('Please enter a valid email'); return false }
+        if (password.length < 6) { setError('Password must be at least 6 characters'); return false }
+        if (!isLogin && password !== confirmPassword) { setError('Passwords do not match'); return false }
+        if (!isLogin && name.trim() === '') { setError('Please enter your name'); return false }
+        return true
+    }
+
+    const handleSubmit = async () => {
+        setError('')
+        if (!validate()) return
+
+        const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register'
+        const body = isLogin ? { email, password } : { name, email, password }
+
+        try {
+            const data = await apiClient(endpoint, {
+                method: 'POST',
+                body: JSON.stringify(body)
+            })
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('userId', data.id)
+            localStorage.setItem('role', data.role)
+            localStorage.setItem('email', data.email)
+            
+            if (isLogin) {
+                navigate('/dashboard')
+              } else {
+                setIsLogin(true)
+                setEmail('')
+                setError('')
+                setName('')
+                setPassword('')
+                setConfirmPassword('')
+                setTouched({})
+              }
+
+        } catch (err) {
+            setError(err.message)
+        }
+    }
+
+    const inputStyle = {
+        width: '100%',
+        background: 'var(--bg-input)',
+        borderRadius: 7,
+        padding: '9px 12px',
+        fontSize: 13,
+        color: 'var(--text-primary)',
+        outline: 'none',
+        marginBottom: 4
+    }
+
+    const isFormValid = () => {
+        if (!email.includes('@')) return false
+        if (password.length < 6) return false
+        if (!isLogin && password !== confirmPassword) return false
+        if (!isLogin && name.trim() === '') return false
+        return true
+    }
+
+    const fieldError = (field) => getFieldError(field) ? (
+        <div style={{ color: 'var(--red)', fontSize: 11, marginBottom: 8 }}>
+            {getFieldError(field)}
+        </div>
+    ) : <div style={{ marginBottom: 8 }} />
 
     return (
         <div style={{
@@ -20,6 +112,7 @@ export default function Login() {
                 maxWidth: 360,
             }}>
 
+                {/* Logo */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: '1.5rem' }}>
                     <div style={{
                         width: 28, height: 28, background: 'var(--purple)',
@@ -29,114 +122,88 @@ export default function Login() {
                     <span style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: 16 }}>GymLog</span>
                 </div>
 
-                <div style={{
-                    display: 'flex',
-                    background: 'var(--bg-page)',
-                    borderRadius: 8,
-                    padding: 3,
-                    marginBottom: '1.5rem'
-                }}>
-
-                    <button
-                        onClick={() => setIsLogin(true)}
-                        style={{
-                            flex: 1, padding: '7px', fontSize: 12, borderRadius: 6,
-                            border: 'none', cursor: 'pointer',
-                            background: isLogin ? 'var(--purple)' : 'transparent',
-                            color: isLogin ? 'white' : 'var(--text-muted)',
-                            fontWeight: isLogin ? 600 : 400
-                        }}>Login
-                    </button>
-
-                    <button
-                        onClick={() => setIsLogin(false)}
-                        style={{
-                            flex: 1, padding: '7px', fontSize: 12, borderRadius: 6,
-                            border: 'none', cursor: 'pointer',
-                            background: isLogin ? 'transparent' : 'var(--purple)',
-                            color: isLogin ? 'var(--text-muted)' : 'white',
-                            fontWeight: isLogin ? 400 : 600
-                        }}>Register
-                    </button>
+                {/* Tabs */}
+                <div style={{ display: 'flex', background: 'var(--bg-page)', borderRadius: 8, padding: 3, marginBottom: '1.5rem' }}>
+                    <button onClick={() => setIsLogin(true)} style={{
+                        flex: 1, padding: '7px', fontSize: 12, borderRadius: 6,
+                        border: 'none', cursor: 'pointer',
+                        background: isLogin ? 'var(--purple)' : 'transparent',
+                        color: isLogin ? 'white' : 'var(--text-muted)',
+                        fontWeight: isLogin ? 600 : 400
+                    }}>Login</button>
+                    <button onClick={() => setIsLogin(false)} style={{
+                        flex: 1, padding: '7px', fontSize: 12, borderRadius: 6,
+                        border: 'none', cursor: 'pointer',
+                        background: isLogin ? 'transparent' : 'var(--purple)',
+                        color: isLogin ? 'var(--text-muted)' : 'white',
+                        fontWeight: isLogin ? 400 : 600
+                    }}>Register</button>
                 </div>
 
-                <div>
-                    <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>
-                        Email address
-                    </label>
-                    <input
-                        className="input-field"
-                        type="email"
-                        placeholder="you@example.com"
-                        style={{
-                            width: '100%',
-                            background: 'var(--bg-input)',
-                            borderRadius: 7,
-                            padding: '9px 12px',
-                            fontSize: 13,
-                            color: 'var(--text-primary)',
-                            outline: 'none',
-                            marginBottom: 10
-                        }}
-                    />
-                </div>
-
-                <div>
-                    <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>
-                        Password
-                    </label>
-                    <input
-                        className="input-field"
-                        type="password"
-                        placeholder="Type in your password"
-                        style={{
-                            width: '100%',
-                            background: 'var(--bg-input)',
-                            borderRadius: 7,
-                            padding: '9px 12px',
-                            fontSize: 13,
-                            color: 'var(--text-primary)',
-                            outline: 'none',
-                            marginBottom: 10
-                        }}
-                    />
-                </div>
-
+                {/* Name - register only */}
                 {!isLogin && (
                     <div>
-                        <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>
-                            Confirm password
-                        </label>
-                        <input
-                            className="input-field"
-                            type="password"
-                            placeholder="Confirm your password"
-                            style={{
-                                width: '100%',
-                                background: 'var(--bg-input)',
-                                borderRadius: 7,
-                                padding: '9px 12px',
-                                fontSize: 13,
-                                color: 'var(--text-primary)',
-                                outline: 'none',
-                                marginBottom: 10
-                            }}
-                        />
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Name</label>
+                        <input className="input-field" type="text" value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            onBlur={() => handleBlur('name')}
+                            placeholder="Your name" style={inputStyle} />
+                        {fieldError('name')}
                     </div>
                 )}
 
-                <button style={{
-                    width: '100%',
-                    background: 'var(--purple)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 7,
-                    padding: '10px',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    marginTop: 10
-                }}>
+                {/* Email */}
+                <div>
+                    <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Email address</label>
+                    <input className="input-field" type="email" value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onBlur={() => handleBlur('email')}
+                        placeholder="you@example.com" style={inputStyle} />
+                    {fieldError('email')}
+                </div>
+
+                {/* Password */}
+                <div>
+                    <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Password</label>
+                    <input className="input-field" type="password" value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onBlur={() => handleBlur('password')}
+                        placeholder="Type in your password" style={inputStyle} />
+                    {fieldError('password')}
+                </div>
+
+                {/* Confirm password - register only */}
+                {!isLogin && (
+                    <div>
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Confirm password</label>
+                        <input className="input-field" type="password" value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            onBlur={() => handleBlur('confirmPassword')}
+                            placeholder="Confirm your password" style={inputStyle} />
+                        {fieldError('confirmPassword')}
+                    </div>
+                )}
+
+                {/* Submit error */}
+                {error && (
+                    <div style={{ color: 'var(--red)', fontSize: 12, marginBottom: 8, padding: '8px 12px', background: 'var(--red-bg)', borderRadius: 6 }}>
+                        {error}
+                    </div>
+                )}
+
+                {/* Submit */}
+                <button
+                    onClick={handleSubmit}
+                    disabled={!isFormValid()}
+                    style={{
+                        width: '100%',
+                        background: isFormValid() ? 'var(--purple)' : 'var(--border)',
+                        color: isFormValid() ? 'white' : 'var(--text-muted)',
+                        border: 'none', borderRadius: 7, padding: '10px', fontSize: 13,
+                        fontWeight: 600,
+                        cursor: isFormValid() ? 'pointer' : 'not-allowed',
+                        marginTop: 4
+                    }}>
                     {isLogin ? 'Sign in' : 'Sign up'}
                 </button>
             </div>
