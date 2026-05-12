@@ -23,8 +23,15 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
 
     try {
       const newLog = await apiClient(
-        `/api/workoutlogs?workoutId=${selectedWorkoutId}&userId=${user.id}&date=${date}&energyLevel=${energyLevel}&notes=${notes}`,
-        { method: 'POST' }
+        `/api/workoutlogs?userId=${user.id}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            workoutId: Number(selectedWorkoutId),
+            date: date,
+            energyLevel: energyLevel ? Number(energyLevel) : null
+          })
+        }
       )
       onLogged(newLog)
       onClose()

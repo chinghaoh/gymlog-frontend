@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { apiClient } from '../../lib/ApiClient'
-import { useAuth } from '../context/AuthContext'
+import { apiClient } from '../../../lib/ApiClient'
+import { useAuth } from '../../context/AuthContext'
 
 export default function CreateWorkoutModal({ onClose, onCreated }) {
   const { user } = useAuth()
@@ -8,7 +8,6 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
   const [splitCategory, setSplitCategory] = useState('PUSH')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [durationMinutes, setDurationMinutes] = useState('')
-  const [energyLevel, setEnergyLevel] = useState('')
   const [notes, setNotes] = useState('')
 
   const handleSubmit = async () => {
@@ -66,10 +65,6 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Duration (min)</label>
               <input className="input-field" type="number" value={durationMinutes} onChange={e => setDurationMinutes(e.target.value)} placeholder="60" style={inputStyle} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Energy (1-10)</label>
-              <input className="input-field" type="number" min="1" max="10" value={energyLevel} onChange={e => setEnergyLevel(e.target.value)} placeholder="8" style={inputStyle} />
             </div>
           </div>
 

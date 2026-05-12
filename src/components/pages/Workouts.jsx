@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../lib/ApiClient'
 import { useAuth } from '../context/AuthContext'
-import FilterPills from '../ui/FilterPills'
-import Pagination from '../ui/Pagination'
-import CreateWorkoutModal from '../ui/CreateWorkoutModal'
+import CreateWorkoutModal from '../ui/WorkoutModalComponents/CreateWorkoutModal'
 import LogWorkoutModal from "../ui/WorkoutModalComponents/LogWorkoutModal"
-import WorkoutLogsView from '../ui/WorkoutLogsView'
-import WorkoutView from '../ui/WorkoutView'
+import WorkoutLogsView from './WorkoutLogsView'
+import WorkoutView from './WorkoutView'
 
-export default function Workouts() {  
+export default function Workouts() {
   const { user } = useAuth()
   const [workouts, setWorkouts] = useState([])
   const [logs, setLogs] = useState([])
@@ -16,9 +14,6 @@ export default function Workouts() {
   const [activeFilter, setActiveFilter] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
-
-  const [selectedWorkout, setSelectedWorkout] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLogModalOpen, setIsLogModalOpen] = useState(false)
   const [isCreateWorkoutOpen, setIsCreateWorkoutOpen] = useState(false)
 
@@ -27,17 +22,11 @@ export default function Workouts() {
     apiClient(`/api/workouts?userId=${user.id}`)
       .then(data => setWorkouts(data))
       .catch(err => console.error(err))
+
+    apiClient(`/api/workoutlogs?userId=${user.id}`)
+      .then(data => setLogs(data))
+      .catch(err => console.error(err))
   }, [user])
-
-  const openModal = (workout) => {
-    setSelectedWorkout(workout)
-    setIsModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setSelectedWorkout(null)
-    setIsModalOpen(false)
-  }
 
   return (
     <div>
@@ -45,16 +34,20 @@ export default function Workouts() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
         <h1 style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Workouts</h1>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setIsCreateWorkoutOpen(true)} style={{
-            background: 'transparent', color: 'var(--text-primary)',
-            border: '0.5px solid var(--border)', borderRadius: 7, padding: '8px 16px',
-            fontWeight: 600, cursor: 'pointer'
-          }}>+ New Workout</button>
-          <button onClick={() => setIsLogModalOpen(true)} style={{
-            background: 'var(--purple)', color: 'white',
-            border: 'none', borderRadius: 7, padding: '8px 16px',
-            fontWeight: 600, cursor: 'pointer'
-          }}>+ Log Workout</button>
+          {view === 'workouts' && (
+            <button onClick={() => setIsCreateWorkoutOpen(true)} style={{
+              background: 'var(--purple)', color: 'white',
+              border: 'none', borderRadius: 7, padding: '8px 16px',
+              fontWeight: 600, cursor: 'pointer'
+            }}>+ New Workout</button>
+          )}
+          {view === 'logs' && (
+            <button onClick={() => setIsLogModalOpen(true)} style={{
+              background: 'var(--purple)', color: 'white',
+              border: 'none', borderRadius: 7, padding: '8px 16px',
+              fontWeight: 600, cursor: 'pointer'
+            }}>+ Log Workout</button>
+          )}
         </div>
       </div>
 
@@ -77,12 +70,13 @@ export default function Workouts() {
       {/* Content */}
       {view === 'workouts' ? (
         <WorkoutView
-          onRowClick={openModal}
-          onCreateWorkout={() => setIsCreateWorkoutOpen(true)} />
+          workouts={workouts}
+          onDelete={(id) => setWorkouts(prev => prev.filter(w => w.id !== id))}
+        />
       ) : (
         <WorkoutLogsView
           workouts={logs}
-          onRowClick={openModal}
+          onDelete={(id) => setLogs(prev => prev.filter(l => l.id !== id))}
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
           currentPage={currentPage}

@@ -1,38 +1,18 @@
 import { useAuth } from '../context/AuthContext'
 import { apiClient } from '../../lib/ApiClient'
 import { useState, useEffect } from 'react'
-import FilterPills from './FilterPills'
-import Pagination from './Pagination'
+import FilterPills from '../ui/FilterPills'
+import Pagination from '../ui/Pagination'
 import { useNavigate } from 'react-router-dom'
 
 
-export default function WorkoutView({ onCreateWorkout, onRowClick }) {
+export default function WorkoutView({ workouts, onDelete }) {
   const navigate = useNavigate()
-
-  const { user } = useAuth()
-  const [workouts, setWorkouts] = useState([])
   const [activeFilter, setActiveFilter] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
   const filters = ['All', 'Push', 'Pull', 'Legs', 'Upper', 'Full Body', 'Cardio']
-
-  useEffect(() => {
-    if (!user) return
-    apiClient(`/api/workouts?userId=${user.id}`)
-      .then(data => setWorkouts(data))
-      .catch(err => console.error(err))
-  }, [user])
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this workout?')) return
-    try {
-      await apiClient(`/api/workouts/${id}`, { method: 'DELETE' })
-      setWorkouts(prev => prev.filter(w => w.id !== id))
-    } catch (err) {
-      console.error(err)
-    }
-  }
 
   const filteredWorkouts = activeFilter === 'All'
     ? workouts
@@ -42,6 +22,16 @@ export default function WorkoutView({ onCreateWorkout, onRowClick }) {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this workout?')) return
+    try {
+      await apiClient(`/api/workouts/${id}`, { method: 'DELETE' })
+      onDelete(id)
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   return (
     <div>
@@ -65,9 +55,7 @@ export default function WorkoutView({ onCreateWorkout, onRowClick }) {
               </tr>
             ) : (
               paginatedWorkouts.map((workout, index) => (
-                <tr
-                onClick={() => navigate(`/workouts/${workout.id}`)}
-                key={workout.id}
+                <tr key={workout.id}
                   style={{ borderBottom: index === paginatedWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
@@ -79,11 +67,11 @@ export default function WorkoutView({ onCreateWorkout, onRowClick }) {
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{workout.durationMinutes} min</td>
                   <td style={{ padding: '10px 16px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                      <button onClick={() => onRowClick(workout)}
+                      <button onClick={() => navigate(`/workouts/${workout.id}`)}
                         style={{ background: 'transparent', color: 'var(--purple-light)', border: '0.5px solid var(--purple)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
                         + Add Sets
                       </button>
-                      <button onClick={(e) => { e.stopPropagation(); handleDelete(workout.id) }}
+                      <button onClick={() => handleDelete(workout.id)}
                         style={{ background: 'transparent', color: 'var(--red)', border: '0.5px solid var(--red)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
                         Delete
                       </button>
