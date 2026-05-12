@@ -2,6 +2,8 @@ import { useState, useEffect } from "react"
 import { useAuth } from "../context/AuthContext"
 import { apiClient } from "../../lib/ApiClient"
 import { NavLink } from "react-router-dom"
+import ActivityCalendar from "../ui/ActivityCalendar"
+
 export default function Dashboard() {
     const { user, setUser } = useAuth()
     const [summary, setSummary] = useState(null)
@@ -26,12 +28,6 @@ export default function Dashboard() {
 
     }, [user])
 
-    useEffect(() => {
-        console.log(recentWorkouts)
-        console.log(latestPrs)
-    })
-
-
     const stats = [
         { label: 'Workouts this week', value: summary?.workoutsThisWeek ?? '—', color: 'var(--purple)' },
         { label: 'Personal Records', value: summary?.totalPrs ?? '—', color: 'var(--teal)' },
@@ -44,15 +40,15 @@ export default function Dashboard() {
             {/* top */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                 <div>
-                    <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>Dashboard</h1>
-                    <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4 }}>
+                    <h1 style={{fontWeight: 700, color: 'var(--text-primary)' }}>Dashboard</h1>
+                    <p style={{color: 'var(--text-muted)', marginTop: 4 }}>
                         Welcome back, {user ? user.name : '...'}
                     </p>
                 </div>
                 <button style={{
                     background: 'var(--purple)', color: 'white',
                     border: 'none', borderRadius: 7, padding: '8px 16px',
-                    fontSize: 13, fontWeight: 600, cursor: 'pointer'
+                    fontWeight: 600, cursor: 'pointer'
                 }}>+ Log Workout</button>
             </div>
 
@@ -70,31 +66,33 @@ export default function Dashboard() {
                         borderRadius: 10,
                         padding: '1rem',
                     }}>
-                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{label}</div>
-                        <div style={{ fontSize: 24, fontWeight: 700, color }}>{value}</div>
+                        <div style={{  color: 'var(--text-muted)', marginBottom: 8 }}>{label}</div>
+                        <div style={{  fontWeight: 700, color }}>{value}</div>
                     </div>
                 ))}
             </div>
 
+            {/* Recent workouts / prs*/}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: '1.5rem' }}>
                 {/* Recent Workouts */}
                 <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '1rem' }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Recent Workouts</div>
+                    <div style={{  fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Recent Workouts</div>
 
                     {recentWorkouts.length === 0 ? (
-                        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>No workouts logged yet</div>
+                        <div style={{  color: 'var(--text-muted)' }}>No workouts logged yet</div>
                     ) : (
-                        recentWorkouts.map(workout => (
+                        recentWorkouts.map((workout, index) => (
                             <div key={workout.id} style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                padding: '8px 0', borderBottom: '0.5px solid var(--border)'
+                                padding: '8px 0', 
+                                borderBottom: index === recentWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)'
                             }}>
                                 <div>
-                                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>{workout.name}</div>
-                                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{workout.date} · {workout.durationMinutes} min</div>
+                                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{workout.name}</div>
+                                    <div style={{  color: 'var(--text-muted)', marginTop: 2 }}>{workout.date} · {workout.durationMinutes} min</div>
                                 </div>
                                 <span style={{
-                                    fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+                                     fontWeight: 600, padding: '2px 8px', borderRadius: 4,
                                     background: 'var(--purple-bg)', color: 'var(--purple-light)'
                                 }}>{workout.splitCategory}</span>
                             </div>
@@ -102,7 +100,7 @@ export default function Dashboard() {
                     )}
 
                     <div style={{ marginTop: 12, paddingTop: 8, borderTop: '0.5px solid var(--border)' }}>
-                        <NavLink to="/workouts" style={{ fontSize: 12, color: 'var(--purple-light)', textDecoration: 'none' }}>
+                        <NavLink to="/workouts" style={{  color: 'var(--purple-light)', textDecoration: 'none' }}>
                             View all workouts →
                         </NavLink>
                     </div>
@@ -110,31 +108,55 @@ export default function Dashboard() {
 
                 {/* Latest PRs */}
                 <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '1rem' }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Latest Personal Records</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Latest Personal Records</div>
 
                     {latestPrs.length === 0 ? (
-                        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>No personal records yet</div>
+                        <div style={{  color: 'var(--text-muted)' }}>No personal records yet</div>
                     ) : (
-                        latestPrs.map(pr => (
+                        latestPrs.map((pr, index) => (
                             <div key={pr.id} style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                padding: '8px 0', borderBottom: '0.5px solid var(--border)'
+                                padding: '8px 0', 
+                                borderBottom: index === latestPrs.length - 1 ? 'none' : '0.5px solid var(--border)'
                             }}>
                                 <div>
-                                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>{pr.exerciseName}</div>
-                                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{pr.category} · {pr.achievedAt}</div>
+                                    <div style={{  fontWeight: 500, color: 'var(--text-primary)' }}>{pr.exerciseName}</div>
+                                    <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>{pr.category} · {pr.achievedAt}</div>
                                 </div>
-                                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--teal)' }}>{pr.weight}kg × {pr.reps}</div>
+                                <div style={{ fontWeight: 600, color: 'var(--teal)' }}>{pr.weight}kg × {pr.reps}</div>
                             </div>
                         ))
                     )}
                     <div style={{ marginTop: 12, paddingTop: 8, borderTop: '0.5px solid var(--border)' }}>
-                        <NavLink to="/records" style={{ fontSize: 12, color: 'var(--purple-light)', textDecoration: 'none' }}>
+                        <NavLink to="/records" style={{  color: 'var(--purple-light)', textDecoration: 'none' }}>
                             View all records →
                         </NavLink>
                     </div>
                 </div>
 
+            </div>
+
+            {/* Activity calender*/}
+            <ActivityCalendar />
+
+            {/* Legend */}
+            <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--purple)', display: 'inline-block' }} />
+                    Workout + PR
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--purple-bg)', display: 'inline-block' }} />
+                    Workout
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--border-light)', display: 'inline-block' }} />
+                    Rest day
+                </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 2, border: '0.5px solid var(--purple)', display: 'inline-block' }} />
+                    Today
+                </span>
             </div>
         </div>
     )

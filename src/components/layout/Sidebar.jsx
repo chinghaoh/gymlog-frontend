@@ -35,9 +35,9 @@ export default function Sidebar() {
         <div style={{
           width: 28, height: 28, background: 'var(--purple)',
           borderRadius: 6, display: 'flex', alignItems: 'center',
-          justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14
+          justifyContent: 'center', color: 'white', fontWeight: 700
         }}>G</div>
-        <span style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: 15 }}>GymLog</span>
+        <span style={{ color: 'var(--text-primary)', fontWeight: 600}}>GymLog</span>
       </div>
 
       {/* navigation tabs */}
@@ -46,7 +46,6 @@ export default function Sidebar() {
           <NavLink key={to} to={to} style={({ isActive }) => ({
             display: 'flex', alignItems: 'center', gap: 10,
             padding: '8px 10px', borderRadius: 6, textDecoration: 'none',
-            fontSize: 13,
             color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
             background: isActive ? 'var(--purple-bg)' : 'transparent',
           })}>
@@ -68,15 +67,16 @@ export default function Sidebar() {
             <div style={{
               width: 26, height: 26, borderRadius: '50%', background: 'var(--purple)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'white', fontSize: 10, fontWeight: 600, flexShrink: 0
+              fontSize: 12,
+              color: 'white', fontWeight: 600, flexShrink: 0
             }}>CH</div>
             <div style={{ flex: 1,minWidth:0 }}>
-              <div style={{ color: 'var(--text-primary)', fontSize: 11, fontWeight: 500 }}>{user?.name}</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: 10 }}>{user?.role}</div>
+              <div style={{ color: 'var(--text-primary)',  fontWeight: 500, fontSize:12 }}>{user?.name}</div>
+              <div style={{ color: 'var(--text-muted)', fontSize:12 }}>{user?.role}</div>
             </div>
             <span
               onClick={(e) => { e.preventDefault(); handleLogout() }}
-              style={{ color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14, flexShrink: 0 }}
+              style={{ color: 'var(--text-muted)', cursor: 'pointer',flexShrink: 0, fontSize: 12}}
             >Logout</span>
           </div>
         </NavLink>
