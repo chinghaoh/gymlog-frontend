@@ -58,8 +58,11 @@ export default function WorkoutView({ workouts, onDelete }) {
               paginatedWorkouts.map((workout, index) => (
                 <tr 
                 key={workout.id}
-                  style={{ borderBottom: index === paginatedWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
+                style={{ borderBottom: index === paginatedWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)', cursor:'pointer' }}
+                onClick={() => navigate(`/workouts/${workout.id}`)}
+                  onMouseEnter={e => 
+                      {e.currentTarget.style.background = 'var(--border-light)' 
+                      }}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                   <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>{workout.name}</td>
@@ -73,7 +76,7 @@ export default function WorkoutView({ workouts, onDelete }) {
                         style={{ background: 'transparent', color: 'var(--purple-light)', border: '0.5px solid var(--purple)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
                         + Add Sets
                       </button>
-                      <button onClick={() => handleDelete(workout.id)}
+                      <button onClick={(e) => {e.stopPropagation(); handleDelete(workout.id)}}
                         style={{ background: 'transparent', color: 'var(--red)', border: '0.5px solid var(--red)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
                         Delete
                       </button>
