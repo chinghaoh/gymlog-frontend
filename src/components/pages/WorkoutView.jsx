@@ -40,7 +40,8 @@ export default function WorkoutView({ workouts, onDelete }) {
       <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ borderBottom: '0.5px solid var(--border)' }}>
+            <tr 
+            style={{ borderBottom: '0.5px solid var(--border)' }}>
               {['Name', 'Split', 'Duration', ''].map(col => (
                 <th key={col} style={{ padding: '10px 16px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 500 }}>{col}</th>
               ))}
@@ -55,7 +56,8 @@ export default function WorkoutView({ workouts, onDelete }) {
               </tr>
             ) : (
               paginatedWorkouts.map((workout, index) => (
-                <tr key={workout.id}
+                <tr 
+                key={workout.id}
                   style={{ borderBottom: index === paginatedWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}

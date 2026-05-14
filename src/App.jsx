@@ -4,6 +4,8 @@ import Login from './components/pages/login'
 import Dashboard from './components/pages/dashboard'
 import Workouts from './components/pages/workouts'
 import WorkoutDetail from './components/pages/WorkoutDetail'
+import Exercises from './components/pages/Exercises'
+
 
 export default function App() {
   return (
@@ -19,7 +21,7 @@ export default function App() {
                 <Route path="/dashboard" element={<Dashboard/>} />
                 <Route path="/workouts"  element={<Workouts/>} />
                 <Route path="/workouts/:id" element={<WorkoutDetail />} />
-                <Route path="/exercises" element={<div>Exercises</div>} />
+                <Route path="/exercises" element={<Exercises/>} />
                 <Route path="/records"   element={<div>Records</div>} />
                 <Route path="/stats"     element={<div>Stats</div>} />
                 <Route path="/profile"   element={<div>Profile</div>} />
