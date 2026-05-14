@@ -18,6 +18,7 @@ export default function WorkoutDetail() {
     const [editSetReps, setEditSetReps] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
+
   
     useEffect(() => {
       apiClient(`/api/workouts/${id}`)
@@ -127,7 +128,8 @@ export default function WorkoutDetail() {
               ) : (
                 paginatedSets.map((set, index) => (
                   <tr key={set.id}
-                    style={{ borderBottom: index === paginatedSets.length - 1 ? 'none' : '0.5px solid var(--border)' }}
+                    onClick={() => navigate(`/exercises?search=${set.exerciseName}`)}
+                    style={{ borderBottom: index === paginatedSets.length - 1 ? 'none' : '0.5px solid var(--border)', cursor:'pointer'}}
                     onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >

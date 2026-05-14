@@ -2,15 +2,19 @@ import { useState, useEffect } from 'react'
 import { apiClient } from '../../lib/apiClient'
 import FilterPills from '../ui/FilterPills'
 import Pagination from '../ui/Pagination'
+import { useSearchParams } from 'react-router-dom'
 import AddExerciseToWorkoutModal from '../ui/WorkoutModalComponents/AddExerciseToWorkoutModal'
+
 
 export default function Exercises() {
     const [exercises, setExercises] = useState([])
     const [selectedExercise, setSelectedExercise] = useState(null)
-    const [search, setSearch] = useState('')
     const [category, setCategory] = useState('All')
     const [equipment, setEquipment] = useState('All')
     const [currentPage, setCurrentPage] = useState(1)
+    const [searchParams] = useSearchParams()
+    const [search, setSearch] =  useState(searchParams.get('search') || '')
+
     const itemsPerPage = 10
 
 
