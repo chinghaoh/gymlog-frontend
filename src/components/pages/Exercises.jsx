@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react'
 import { apiClient } from '../../lib/apiClient'
 import FilterPills from '../ui/FilterPills'
 import Pagination from '../ui/Pagination'
+import AddExerciseToWorkoutModal from '../ui/WorkoutModalComponents/AddExerciseToWorkoutModal'
 
 export default function Exercises() {
     const [exercises, setExercises] = useState([])
+    const [selectedExercise, setSelectedExercise] = useState(null)
     const [search, setSearch] = useState('')
     const [category, setCategory] = useState('All')
     const [equipment, setEquipment] = useState('All')
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
+
 
     const paginatedExercises = exercises.slice(
         (currentPage - 1) * itemsPerPage,
@@ -80,7 +83,7 @@ export default function Exercises() {
             {/* Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
                 {paginatedExercises.map((exercise) => (
-                    <div key={exercise.id} style={{ background: 'var(--bg-card)', borderRadius: 10, overflow: 'hidden',display:'flex',flexDirection:'column' }}>
+                    <div key={exercise.id} style={{ background: 'var(--bg-card)', borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
 
                         {/* GIF */}
                         <div style={{ height: 160, background: 'var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -91,7 +94,7 @@ export default function Exercises() {
                             )}
                         </div>
 
-                        <div style={{ padding: '0.75rem',display:'flex',flexDirection:'column',flex:1 }}>
+                        <div style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
                             {/* Name */}
                             <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>{exercise.name}</div>
 
@@ -116,12 +119,36 @@ export default function Exercises() {
 
                             {/* Target muscle */}
                             {exercise.targetMuscle && (
-                                <div style={{ color: 'var(--text-muted)', marginTop:'auto'}}>Target: {exercise.targetMuscle}</div>
+                                <div style={{ color: 'var(--text-muted)', marginTop: 'auto' }}>Target: {exercise.targetMuscle}</div>
                             )}
+
+                            {/* Add to workout button */}
+                            <button
+                                onClick={() => setSelectedExercise(exercise)}
+                                style={{
+                                    marginTop: 10,
+                                    width: '100%',
+                                    background: '#534AB7',
+                                    border: 'none',
+                                    borderRadius: 6,
+                                    padding: '7px 0',
+                                    fontWeight: 600,
+                                    color: 'white',
+                                    cursor: 'pointer',
+                                }}
+                            >+ Add to workout</button>
                         </div>
                     </div>
                 ))}
             </div>
+
+            {selectedExercise && (
+                <AddExerciseToWorkoutModal
+                    exercise={selectedExercise}
+                    onClose={() => setSelectedExercise(null)}
+                    onSuccess={() => setSelectedExercise(null)}
+                />
+            )}
 
             <Pagination
                 currentPage={currentPage}
