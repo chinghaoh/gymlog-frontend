@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../../lib/apiClient'
 import { useAuth } from '../../context/AuthContext'
+import WeightProgressionChart from '../../ui/WeightProgressChart'
+import SetHistoryList from '../../ui/SetHistoryList'
 
 export default function ExerciseProgressModal({ record, onClose }) {
     const { user } = useAuth()
@@ -88,42 +90,7 @@ export default function ExerciseProgressModal({ record, onClose }) {
 
                     {/* Weight progression bar chart */}
                     {!loading && sets.length > 0 && (
-                        <div style={{ background: 'var(--bg-input)', border: '0.5px solid var(--border)', borderRadius: 8, padding: 12 }}>
-                            <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-                                Weight progression
-                            </div>
-                            {(() => {
-                                const last10 = sets.slice(-10)
-                                const prSet = sets.find(s => Number(s.weight) === Number(record.weight))
-                                const chartSets = last10.some(s => Number(s.weight) === Number(record.weight))
-                                    ? last10
-                                    : [...last10.slice(1), prSet]
-                                const maxWeight = Math.max(...chartSets.map(s => Number(s.weight)))
-                                return (
-                                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 100 }}>
-                                        {chartSets.map((set, i) => {
-                                            const height = maxWeight > 0 ? (Number(set.weight) / maxWeight) * 70 : 4
-                                            const isPR = Number(set.weight) === Number(record.weight)
-                                            return (
-                                                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, justifyContent: 'flex-end' }}>
-                                                    <div style={{ fontSize: 8, color: 'var(--text-muted)' }}>
-                                                        {Number(set.weight) > 0 ? set.weight : ''}
-                                                    </div>
-                                                    <div style={{
-                                                        width: '100%', borderRadius: '3px 3px 0 0',
-                                                        height: `${height}px`,
-                                                        background: isPR ? 'var(--teal)' : 'var(--purple)',
-                                                        opacity: isPR ? 1 : 0.6,
-                                                        minHeight: 4,
-                                                    }} />
-                                                    <div style={{ fontSize: 8, color: 'var(--text-muted)' }}>#{i + 1}</div>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                )
-                            })()}
-                        </div>
+                        <WeightProgressionChart sets={sets} prWeight={record.weight} />
                     )}
 
                     {/* Set history */}
@@ -136,29 +103,7 @@ export default function ExerciseProgressModal({ record, onClose }) {
                         ) : sets.length === 0 ? (
                             <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>No sets logged yet.</div>
                         ) : (
-                            <div style={{ maxHeight: 200, overflowY: 'auto', paddingRight:8 }}>
-                                {sortedSets.map((set, i) => {
-                                    const isPR = Number(set.weight) === Number(record.weight) && set.reps === record.reps
-                                    return (
-                                        <div key={i} style={{
-                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                            padding: '7px 0', borderBottom: i === sets.length - 1 ? 'none' : '0.5px solid var(--border-light)',
-                                        }}>
-                                            <div style={{ color: 'var(--text-muted)' }}>Set {set.setNumber} · Workout #{set.workoutId}  · {new Date(set.workoutCreatedAt).toLocaleDateString()}</div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>
-                                                    {set.weight}kg × {set.reps}
-                                                </div>
-                                                {isPR && (
-                                                    <span style={{ fontSize: 9, background: 'var(--teal-bg)', color: 'var(--teal)', padding: '1px 6px', borderRadius: 3, fontWeight: 600 }}>
-                                                        PR
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
+                            <SetHistoryList sets={sets} prWeight={record.weight} prReps={record.reps} />
                         )}
                     </div>
 
