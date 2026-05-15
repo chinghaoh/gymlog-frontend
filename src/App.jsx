@@ -7,7 +7,7 @@ import WorkoutDetail from './components/pages/WorkoutDetail'
 import Exercises from './components/pages/Exercises'
 import Records from './components/pages/Records'
 import Profile from './components/pages/Profile'
-
+import ExerciseDetail from './components/pages/ExerciseDetail'
 
 export default function App() {
   return (
@@ -24,6 +24,7 @@ export default function App() {
                 <Route path="/workouts"  element={<Workouts/>} />
                 <Route path="/workouts/:id" element={<WorkoutDetail />} />
                 <Route path="/exercises" element={<Exercises/>} />
+                <Route path="/exercises/:id" element={<ExerciseDetail />} />
                 <Route path="/records"   element={<Records/>} />
                 <Route path="/profile"   element={<Profile/>} />
                 <Route index             element={<Navigate to="/dashboard" replace />} />

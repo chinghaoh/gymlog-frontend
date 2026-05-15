@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { apiClient } from '../../lib/apiClient'
 import FilterPills from '../ui/FilterPills'
 import Pagination from '../ui/Pagination'
@@ -13,7 +14,8 @@ export default function Exercises() {
     const [equipment, setEquipment] = useState('All')
     const [currentPage, setCurrentPage] = useState(1)
     const [searchParams] = useSearchParams()
-    const [search, setSearch] =  useState(searchParams.get('search') || '')
+    const [search, setSearch] = useState(searchParams.get('search') || '')
+    const navigate = useNavigate()
 
     const itemsPerPage = 10
 
@@ -87,7 +89,10 @@ export default function Exercises() {
             {/* Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
                 {paginatedExercises.map((exercise) => (
-                    <div key={exercise.id} style={{ background: 'var(--bg-card)', borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <div key={exercise.id}
+                        className='clickable'
+                        onClick={() => navigate(`/exercises/${exercise.id}`)}
+                        style={{ background: 'var(--bg-card)', borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column', cursor:'pointer' }}>
 
                         {/* GIF */}
                         <div style={{ height: 160, background: 'var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -128,7 +133,7 @@ export default function Exercises() {
 
                             {/* Add to workout button */}
                             <button
-                                onClick={() => setSelectedExercise(exercise)}
+                                onClick={(e) => { e.stopPropagation(); setSelectedExercise(exercise) }}
                                 style={{
                                     marginTop: 10,
                                     width: '100%',
