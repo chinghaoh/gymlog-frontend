@@ -21,7 +21,6 @@ export default function Sidebar() {
     { to: '/workouts', label: 'Workouts', color: 'var(--teal)' },
     { to: '/exercises', label: 'Exercises', color: 'var(--amber)' },
     { to: '/records', label: 'Records', color: 'var(--blue)' },
-    { to: '/stats', label: 'Stats', color: 'var(--text-muted)' },
   ]
 
   return (
