@@ -8,12 +8,15 @@ import Exercises from './components/pages/Exercises'
 import Records from './components/pages/Records'
 import Profile from './components/pages/Profile'
 import ExerciseDetail from './components/pages/ExerciseDetail'
+import VerifyEmail from './components/pages/VerifyEmail'
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login/>} />
+        <Route path="/verify" element={<VerifyEmail />} />
+
 
         <Route path="/*" element={
           <div style={{ display: 'flex' }}>

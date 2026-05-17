@@ -13,6 +13,7 @@ export default function Sidebar() {
     localStorage.removeItem('userId')
     localStorage.removeItem('role')
     localStorage.removeItem('email')
+    setUser(null)
     navigate('/login')
   }
 
@@ -74,7 +75,7 @@ export default function Sidebar() {
               <div style={{ color: 'var(--text-muted)', fontSize:12 }}>{user?.role}</div>
             </div>
             <span
-              onClick={(e) => { e.preventDefault(); handleLogout() }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleLogout() }}
               style={{ color: 'var(--text-muted)', cursor: 'pointer',flexShrink: 0, fontSize: 12}}
             >Logout</span>
           </div>

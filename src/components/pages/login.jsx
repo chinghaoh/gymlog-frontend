@@ -11,6 +11,8 @@ export default function Login() {
     const [confirmPassword, setConfirmPassword] = useState("")
     const [error, setError] = useState("")
     const [touched, setTouched] = useState({})
+    const [success, setSuccess] = useState('')
+
 
     const navigate = useNavigate()
 
@@ -41,31 +43,34 @@ export default function Login() {
 
         const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register'
         const body = isLogin ? { email, password } : { name, email, password }
-
         try {
             const data = await apiClient(endpoint, {
                 method: 'POST',
                 body: JSON.stringify(body),
-                skipRedirect:true
+                skipRedirect: true
             })
-            localStorage.setItem('token', data.token)
-            localStorage.setItem('userId', data.userId)
-            localStorage.setItem('role', data.role)
-            localStorage.setItem('email', data.email)
-
-            console.log(data)
-            
             if (isLogin) {
+                localStorage.setItem('token', data.token)
+                localStorage.setItem('userId', data.userId)
+                localStorage.setItem('role', data.role)
+                localStorage.setItem('email', data.email)
+                
+                apiClient(`/api/users/${data.userId}`)
+                    .then(userData => {
+                        setUser(userData)
+                        navigate('/dashboard')
+                    })
+                    .catch(() => navigate('/dashboard'))
                 navigate('/dashboard')
-              } else {
-                setIsLogin(true)
+            } else {
+                setSuccess('Registration successful! Please check your email to verify your account.')
                 setEmail('')
                 setError('')
                 setName('')
                 setPassword('')
                 setConfirmPassword('')
                 setTouched({})
-              }
+            }
 
         } catch (err) {
             setError(err.message)
@@ -142,7 +147,7 @@ export default function Login() {
                     }}>Register</button>
                 </div>
 
-                {/* Name - register only */}
+                {/* Name */}
                 {!isLogin && (
                     <div>
                         <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Name</label>
@@ -158,7 +163,7 @@ export default function Login() {
                 <div>
                     <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Email address</label>
                     <input className="input-field" type="email" value={email}
-                        onChange={(e) => {setEmail(e.target.value); setError('')}}
+                        onChange={(e) => { setEmail(e.target.value); setError('') }}
                         onBlur={() => handleBlur('email')}
                         placeholder="you@example.com" style={inputStyle} />
                     {fieldError('email')}
@@ -168,13 +173,13 @@ export default function Login() {
                 <div>
                     <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Password</label>
                     <input className="input-field" type="password" value={password}
-                        onChange={(e) => {setPassword(e.target.value); setError('')}}
+                        onChange={(e) => { setPassword(e.target.value); setError('') }}
                         onBlur={() => handleBlur('password')}
                         placeholder="Type in your password" style={inputStyle} />
                     {fieldError('password')}
                 </div>
 
-                {/* Confirm password - register only */}
+                {/* Confirm password*/}
                 {!isLogin && (
                     <div>
                         <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Confirm password</label>

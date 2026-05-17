@@ -24,8 +24,12 @@ export async function apiClient(endpoint, options = {}) {
   }
 
   if (!response.ok) {
-    const error = await response.json()
-    throw new Error(error.message || 'Something went wrong')
+    try {
+      const error = await response.json()
+      throw new Error(error.message || 'Something went wrong')
+    } catch {
+      throw new Error('Something went wrong')
+    }
   }
 
   if (response.status === 204 || response.headers.get('content-length') === '0') {
