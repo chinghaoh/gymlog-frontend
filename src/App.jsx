@@ -9,6 +9,8 @@ import Records from './components/pages/Records'
 import Profile from './components/pages/Profile'
 import ExerciseDetail from './components/pages/ExerciseDetail'
 import VerifyEmail from './components/pages/VerifyEmail'
+import ForgotPassword from './components/pages/ForgotPassword'
+import ResetPassword from './components/pages/ResetPassword'
 
 export default function App() {
   return (
@@ -16,7 +18,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login/>} />
         <Route path="/verify" element={<VerifyEmail />} />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route path="/*" element={
           <div style={{ display: 'flex' }}>

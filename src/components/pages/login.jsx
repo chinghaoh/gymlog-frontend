@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { apiClient } from '../../lib/ApiClient'
 import { useNavigate } from "react-router-dom"
+import { useAuth } from '../context/AuthContext'
 
 
 export default function Login() {
@@ -13,9 +14,8 @@ export default function Login() {
     const [touched, setTouched] = useState({})
     const [success, setSuccess] = useState('')
 
-
     const navigate = useNavigate()
-
+    const { loadUser } = useAuth()
 
     const handleBlur = (field) => {
         setTouched(prev => ({ ...prev, [field]: true }))
@@ -43,24 +43,20 @@ export default function Login() {
 
         const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register'
         const body = isLogin ? { email, password } : { name, email, password }
+
         try {
             const data = await apiClient(endpoint, {
                 method: 'POST',
                 body: JSON.stringify(body),
                 skipRedirect: true
             })
+
             if (isLogin) {
                 localStorage.setItem('token', data.token)
                 localStorage.setItem('userId', data.userId)
                 localStorage.setItem('role', data.role)
                 localStorage.setItem('email', data.email)
-                
-                apiClient(`/api/users/${data.userId}`)
-                    .then(userData => {
-                        setUser(userData)
-                        navigate('/dashboard')
-                    })
-                    .catch(() => navigate('/dashboard'))
+                loadUser()
                 navigate('/dashboard')
             } else {
                 setSuccess('Registration successful! Please check your email to verify your account.')
@@ -131,14 +127,14 @@ export default function Login() {
 
                 {/* Tabs */}
                 <div style={{ display: 'flex', background: 'var(--bg-page)', borderRadius: 8, padding: 3, marginBottom: '1.5rem' }}>
-                    <button onClick={() => setIsLogin(true)} style={{
+                    <button onClick={() => { setIsLogin(true); setSuccess(''); setError('') }} style={{
                         flex: 1, padding: '7px', fontSize: 12, borderRadius: 6,
                         border: 'none', cursor: 'pointer',
                         background: isLogin ? 'var(--purple)' : 'transparent',
                         color: isLogin ? 'white' : 'var(--text-muted)',
                         fontWeight: isLogin ? 600 : 400
                     }}>Login</button>
-                    <button onClick={() => setIsLogin(false)} style={{
+                    <button onClick={() => { setIsLogin(false); setSuccess(''); setError('') }} style={{
                         flex: 1, padding: '7px', fontSize: 12, borderRadius: 6,
                         border: 'none', cursor: 'pointer',
                         background: isLogin ? 'transparent' : 'var(--purple)',
@@ -179,7 +175,7 @@ export default function Login() {
                     {fieldError('password')}
                 </div>
 
-                {/* Confirm password*/}
+                {/* Confirm password */}
                 {!isLogin && (
                     <div>
                         <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Confirm password</label>
@@ -191,10 +187,17 @@ export default function Login() {
                     </div>
                 )}
 
-                {/* Submit error */}
+                {/* Error message */}
                 {error && (
                     <div style={{ color: 'var(--red)', fontSize: 12, marginBottom: 8, padding: '8px 12px', background: 'var(--red-bg)', borderRadius: 6 }}>
                         {error}
+                    </div>
+                )}
+
+                {/* Success message */}
+                {success && (
+                    <div style={{ color: 'var(--teal)', fontSize: 12, marginBottom: 8, padding: '8px 12px', background: 'var(--teal-bg)', borderRadius: 6 }}>
+                        {success}
                     </div>
                 )}
 
@@ -213,7 +216,15 @@ export default function Login() {
                     }}>
                     {isLogin ? 'Sign in' : 'Sign up'}
                 </button>
+
+
+                {/* Forgot password */}
+                <div
+                    onClick={() => navigate('/forgot-password')}
+                    style={{ textAlign: 'center', color: 'var(--text-muted)', cursor: 'pointer', marginTop: 12 }}
+                >Forgot password?</div>
             </div>
+
         </div>
     )
 }
