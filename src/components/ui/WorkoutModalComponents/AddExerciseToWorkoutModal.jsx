@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../../lib/apiClient'
 import { useAuth } from '../../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
+
 
 export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess }) {
     const [workouts, setWorkouts] = useState([])
@@ -9,6 +11,7 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
     const [fetchingWorkouts, setFetchingWorkouts] = useState(true)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const navigate = useNavigate()
 
     const { user } = useAuth()
 
@@ -37,18 +40,17 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
         setError(null)
 
         try {
-            for (let i = 0; i < sets.length; i++) {
-                await apiClient(`/api/sets?workoutId=${selectedWorkoutId}&exerciseId=${exercise.id}`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        setNumber: i + 1,
-                        reps: Number(sets[i].reps) || 0,
-                        weight: Number(sets[i].weight) || 0,
-                        notes: null,
-                    }),
-                })
-            }
+            await apiClient(`/api/sets/bulk?workoutId=${selectedWorkoutId}&exerciseId=${exercise.id}`, {
+                method: 'POST',
+                body: JSON.stringify(sets.map((set, i) => ({
+                    setNumber: i + 1,
+                    reps: Number(set.reps) || 0,
+                    weight: Number(set.weight) || 0,
+                    notes: null,
+                })))
+            })
             if (onSuccess) onSuccess()
+            navigate(`/workouts/${selectedWorkoutId}`)
             onClose()
         } catch (err) {
             setError(err.message || 'Something went wrong.')
