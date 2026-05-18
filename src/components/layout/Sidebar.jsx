@@ -1,20 +1,22 @@
 import { NavLink } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
-import { useEffect } from "react"
+import { apiClient } from "../../lib/apiClient"
 
 export default function Sidebar() {
 
   const navigate = useNavigate()
-  const {user,setUser} = useAuth()
+  const { user, setUser } = useAuth()
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('userId')
-    localStorage.removeItem('role')
-    localStorage.removeItem('email')
-    setUser(null)
-    navigate('/login')
+  const handleLogout = async () => {
+    try {
+      await apiClient('/api/auth/logout', { method: 'POST' })
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setUser(null)
+      navigate('/login')
+    }
   }
 
   const navItems = [
@@ -37,7 +39,7 @@ export default function Sidebar() {
           borderRadius: 6, display: 'flex', alignItems: 'center',
           justifyContent: 'center', color: 'white', fontWeight: 700
         }}>G</div>
-        <span style={{ color: 'var(--text-primary)', fontWeight: 600}}>GymLog</span>
+        <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>GymLog</span>
       </div>
 
       {/* navigation tabs */}
@@ -70,13 +72,13 @@ export default function Sidebar() {
               fontSize: 12,
               color: 'white', fontWeight: 600, flexShrink: 0
             }}>CH</div>
-            <div style={{ flex: 1,minWidth:0 }}>
-              <div style={{ color: 'var(--text-primary)',  fontWeight: 500, fontSize:12 }}>{user?.name}</div>
-              <div style={{ color: 'var(--text-muted)', fontSize:12 }}>{user?.role}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: 'var(--text-primary)', fontWeight: 500, fontSize: 12 }}>{user?.name}</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{user?.role}</div>
             </div>
             <span
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleLogout() }}
-              style={{ color: 'var(--text-muted)', cursor: 'pointer',flexShrink: 0, fontSize: 12}}
+              style={{ color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0, fontSize: 12 }}
             >Logout</span>
           </div>
         </NavLink>

@@ -1,18 +1,19 @@
 import { useAuth } from '../../context/AuthContext'
 import { apiClient } from '../../../lib/apiClient'
 import { useNavigate } from 'react-router-dom'
-
 export default function DangerSection() {
   const { user, setUser } = useAuth()
   const navigate = useNavigate()
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('userId')
-    localStorage.removeItem('role')
-    localStorage.removeItem('email')
-    setUser(null)
-    navigate('/login')
+  const handleLogout = async () => {
+    try {
+      await apiClient('/api/auth/logout', { method: 'POST' })
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setUser(null)
+      navigate('/login')
+    }
   }
 
   const handleDeleteAccount = async () => {
@@ -21,10 +22,6 @@ export default function DangerSection() {
 
     try {
       await apiClient(`/api/users/${user.id}`, { method: 'DELETE' })
-      localStorage.removeItem('token')
-      localStorage.removeItem('userId')
-      localStorage.removeItem('role')
-      localStorage.removeItem('email')
       setUser(null)
       navigate('/login')
     } catch (err) {

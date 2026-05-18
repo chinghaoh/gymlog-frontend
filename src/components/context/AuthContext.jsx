@@ -1,19 +1,18 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { apiClient } from '../../lib/ApiClient'
+import { apiClient } from '../../lib/apiClient'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
 
-  const loadUser = () => {
-    const userId = localStorage.getItem('userId')
-    const token = localStorage.getItem('token')
-
-    if (userId && token) {
-      apiClient(`/api/users/${userId}`)
-        .then(data => setUser(data))
-        .catch(() => setUser(null))
+  const loadUser = async () => {
+    try {
+      const data = await apiClient('/api/auth/me', { skipRedirect: true })
+      setUser(data)
+    } catch (err) {
+      console.error('loadUser failed:', err)
+      setUser(null)
     }
   }
 

@@ -40,23 +40,20 @@ export default function Login() {
 
     const handleSubmit = async () => {
         if (!validate()) return
-
+    
         const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register'
         const body = isLogin ? { email, password } : { name, email, password }
-
+    
         try {
-            const data = await apiClient(endpoint, {
+            
+            await apiClient(endpoint, {
                 method: 'POST',
                 body: JSON.stringify(body),
                 skipRedirect: true
             })
-
+    
             if (isLogin) {
-                localStorage.setItem('token', data.token)
-                localStorage.setItem('userId', data.userId)
-                localStorage.setItem('role', data.role)
-                localStorage.setItem('email', data.email)
-                loadUser()
+                await loadUser()
                 navigate('/dashboard')
             } else {
                 setSuccess('Registration successful! Please check your email to verify your account.')
@@ -67,7 +64,7 @@ export default function Login() {
                 setConfirmPassword('')
                 setTouched({})
             }
-
+    
         } catch (err) {
             setError(err.message)
         }
