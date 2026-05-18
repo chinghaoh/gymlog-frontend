@@ -40,9 +40,9 @@ export default function WorkoutView({ workouts, onDelete }) {
       <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr 
-            style={{ borderBottom: '0.5px solid var(--border)' }}>
-              {['Name', 'Split', 'Duration', ''].map(col => (
+            <tr
+              style={{ borderBottom: '0.5px solid var(--border)' }}>
+              {['Name', 'Split', 'Duration', 'Sets', ''].map(col => (
                 <th key={col} style={{ padding: '10px 16px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 500 }}>{col}</th>
               ))}
             </tr>
@@ -56,13 +56,13 @@ export default function WorkoutView({ workouts, onDelete }) {
               </tr>
             ) : (
               paginatedWorkouts.map((workout, index) => (
-                <tr 
-                key={workout.id}
-                style={{ borderBottom: index === paginatedWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)', cursor:'pointer' }}
-                onClick={() => navigate(`/workouts/${workout.id}`)}
-                  onMouseEnter={e => 
-                      {e.currentTarget.style.background = 'var(--border-light)' 
-                      }}
+                <tr
+                  key={workout.id}
+                  style={{ borderBottom: index === paginatedWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)', cursor: 'pointer' }}
+                  onClick={() => navigate(`/workouts/${workout.id}`)}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'var(--border-light)'
+                  }}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                   <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>{workout.name}</td>
@@ -70,13 +70,16 @@ export default function WorkoutView({ workouts, onDelete }) {
                     <span style={{ background: 'var(--purple-bg)', color: 'var(--purple-light)', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>{workout.splitCategory}</span>
                   </td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{workout.durationMinutes} min</td>
+                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>
+                    {workout.totalSets} sets
+                  </td>
                   <td style={{ padding: '10px 16px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                       <button onClick={() => navigate(`/workouts/${workout.id}`)}
                         style={{ background: 'transparent', color: 'var(--purple-light)', border: '0.5px solid var(--purple)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
                         + Add Sets
                       </button>
-                      <button onClick={(e) => {e.stopPropagation(); handleDelete(workout.id)}}
+                      <button onClick={(e) => { e.stopPropagation(); handleDelete(workout.id) }}
                         style={{ background: 'transparent', color: 'var(--red)', border: '0.5px solid var(--red)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
                         Delete
                       </button>
