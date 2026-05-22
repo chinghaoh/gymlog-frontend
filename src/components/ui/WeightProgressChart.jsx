@@ -7,15 +7,18 @@ export default function WeightProgressionChart({ sets, prWeight }) {
       : [...last10.slice(1), prSet]
   })()
 
-  const maxWeight = Math.max(...chartSets.map(s => Number(s.weight)))
+  const validSets = chartSets.filter(s => s && s.weight != null)
+  if (validSets.length === 0) return null
+
+  const maxWeight = Math.max(...validSets.map(s => Number(s.weight)))
 
   return (
     <div style={{ background: 'var(--bg-input)', border: '0.5px solid var(--border)', borderRadius: 8, display: 'flex', flexDirection: 'column', padding: 12 }}>
       <div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
         Weight progression
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 100, flex:1 }}>
-        {chartSets.map((set, i) => {
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 100, flex: 1 }}>
+        {validSets.map((set, i) => {
           const height = maxWeight > 0 ? (Number(set.weight) / maxWeight) * 70 : 4
           const isPR = Number(set.weight) === Number(prWeight)
           return (

@@ -205,7 +205,12 @@ export default function WorkoutDetail() {
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>{set.exerciseName}</td>
+                  <td
+                    onClick={(e) => { e.stopPropagation(); navigate(`/exercises/${set.exerciseId}`) }}
+                    style={{ padding: '10px 16px', color: 'var(--text-primary)', fontWeight: 500, cursor: 'pointer', textDecoration: 'underline', textDecorationColor: 'var(--border)' }}
+                  >
+                    {set.exerciseName}
+                  </td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{set.setNumber}</td>
                   <td style={{ padding: '10px 16px', color: 'var(--teal)', fontWeight: 600 }}>{set.weight}kg</td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>× {set.reps}</td>
