@@ -65,7 +65,22 @@ export default function WorkoutView({ workouts, onDelete }) {
                   }}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>{workout.name}</td>
+                  <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {workout.name}
+                      {workout.aiGenerated && (
+                        <span style={{
+                          background: 'var(--cyan-bg)',
+                          color: 'var(--cyan)',
+                          border: '0.5px solid var(--cyan)',
+                          borderRadius: 4,
+                          padding: '1px 6px',
+                          fontSize: 11,
+                          fontWeight: 600
+                        }}>🤖 AI</span>
+                      )}
+                    </div>
+                  </td>
                   <td style={{ padding: '10px 16px' }}>
                     <span style={{ background: 'var(--purple-bg)', color: 'var(--purple-light)', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>{workout.splitCategory}</span>
                   </td>
