@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { apiClient } from '../../lib/apiClient'
 import { inputStyle } from '../../lib/styles'
-import Pagination from '../ui/Pagination'
 
 export default function WorkoutDetail() {
   const { id } = useParams()
@@ -16,9 +15,6 @@ export default function WorkoutDetail() {
   const [editingSetId, setEditingSetId] = useState(null)
   const [editSetWeight, setEditSetWeight] = useState('')
   const [editSetReps, setEditSetReps] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
-
 
   useEffect(() => {
     apiClient(`/api/workouts/${id}`)
@@ -90,10 +86,7 @@ export default function WorkoutDetail() {
     }
   }
 
-  const paginatedSets = sets.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
+  const sortedSets = [...sets].sort((a, b) => a.id - b.id)
 
   if (!workout) return <div style={{ color: 'var(--text-muted)' }}>Loading...</div>
 
@@ -104,7 +97,9 @@ export default function WorkoutDetail() {
         <button onClick={() => navigate('/workouts')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18 }}>←</button>
         <div>
           <h1 style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{workout.name}</h1>
-          <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>{workout.splitCategory} · {workout.durationMinutes} min</div>
+          <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>
+            {workout.splitCategory} · {workout.durationMinutes ? `${workout.durationMinutes} min` : '—'}
+          </div>
         </div>
       </div>
 
@@ -119,22 +114,21 @@ export default function WorkoutDetail() {
             </tr>
           </thead>
           <tbody>
-            {paginatedSets.length === 0 ? (
+            {sortedSets.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                   No sets yet — add one below
                 </td>
               </tr>
             ) : (
-              paginatedSets.map((set, index) => (
+              sortedSets.map(set => (
                 <tr key={set.id}
-                  onClick={(e) => { e.stopPropagation(); navigate(`/exercises?search=${set.exerciseName}`) }}
-                  style={{ borderBottom: index === paginatedSets.length - 1 ? 'none' : '0.5px solid var(--border)', cursor: 'pointer' }}
+                  style={{ borderBottom: '0.5px solid var(--border)', cursor: 'pointer' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                   <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>{set.exerciseName}</td>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{index + 1}</td>
+                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{set.setNumber}</td>
                   <td style={{ padding: '10px 16px', color: 'var(--teal)', fontWeight: 600 }}>{set.weight}kg</td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>× {set.reps}</td>
                   <td style={{ padding: '10px 16px', textAlign: 'right' }}>
@@ -173,17 +167,9 @@ export default function WorkoutDetail() {
             )}
           </tbody>
         </table>
-
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(sets.length / itemsPerPage)}
-          totalItems={sets.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-        />
       </div>
 
-      {/* Add set form - always visible */}
+      {/* Add set form */}
       <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '1rem', display: 'flex', gap: 12, alignItems: 'flex-end' }}>
         <div style={{ flex: 2 }}>
           <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Exercise</label>

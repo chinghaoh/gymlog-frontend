@@ -12,7 +12,6 @@ export default function Sidebar() {
     try {
       await apiClient('/api/auth/logout', { method: 'POST' })
     } catch (err) {
-      console.error(err)
     } finally {
       setUser(null)
       navigate('/login')
@@ -24,6 +23,7 @@ export default function Sidebar() {
     { to: '/workouts', label: 'Workouts', color: 'var(--teal)' },
     { to: '/exercises', label: 'Exercises', color: 'var(--amber)' },
     { to: '/records', label: 'Records', color: 'var(--blue)' },
+    { to: '/ai', label: 'AI Trainer', color:'var(--cyan)'}
   ]
 
   return (

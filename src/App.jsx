@@ -11,6 +11,7 @@ import ExerciseDetail from './components/pages/ExerciseDetail'
 import VerifyEmail from './components/pages/VerifyEmail'
 import ForgotPassword from './components/pages/ForgotPassword'
 import ResetPassword from './components/pages/ResetPassword'
+import AiChatPage from './components/pages/ai/AiChatPage'
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
                 <Route path="/exercises/:id" element={<ExerciseDetail />} />
                 <Route path="/records"   element={<Records/>} />
                 <Route path="/profile"   element={<Profile/>} />
+                <Route path="/ai" element={<AiChatPage />} />
                 <Route index             element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </div>
