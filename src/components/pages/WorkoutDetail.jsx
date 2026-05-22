@@ -55,7 +55,8 @@ export default function WorkoutDetail() {
           })
         }
       )
-      setSets(prev => [...prev, newSet])
+      const updatedSets = await apiClient(`/api/sets?workoutId=${id}`)
+      setSets(updatedSets)
       setSelectedExerciseId('')
       setReps('')
       setWeight('')
@@ -110,7 +111,6 @@ export default function WorkoutDetail() {
     }
   }
 
-  const sortedSets = [...sets].sort((a, b) => a.id - b.id)
 
   if (!workout) return <div style={{ color: 'var(--text-muted)' }}>Loading...</div>
 
@@ -192,14 +192,14 @@ export default function WorkoutDetail() {
             </tr>
           </thead>
           <tbody>
-            {sortedSets.length === 0 ? (
+            {sets.map.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                   No sets yet — add one below
                 </td>
               </tr>
             ) : (
-              sortedSets.map(set => (
+              sets.map(set => (
                 <tr key={set.id}
                   style={{ borderBottom: '0.5px solid var(--border)', cursor: 'pointer' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
