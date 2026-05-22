@@ -3,6 +3,8 @@ import { useAuth } from "../context/AuthContext"
 import { apiClient } from "../../lib/ApiClient"
 import { NavLink } from "react-router-dom"
 import ActivityCalendar from "../ui/ActivityCalendar"
+import LogWorkoutModal from "../ui/WorkoutModalComponents/LogWorkoutModal"
+
 
 export default function Dashboard() {
     const { user, setUser } = useAuth()
@@ -10,6 +12,8 @@ export default function Dashboard() {
 
     const [recentWorkouts, setRecentWorkouts] = useState([])
     const [latestPrs, setLatestPrs] = useState([])
+    const [isLogModalOpen, setIsLogModalOpen] = useState(false)
+
 
     useEffect(() => {
         if (!user) return
@@ -40,12 +44,12 @@ export default function Dashboard() {
             {/* top */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                 <div>
-                    <h1 style={{fontWeight: 700, color: 'var(--text-primary)' }}>Dashboard</h1>
-                    <p style={{color: 'var(--text-muted)', marginTop: 4 }}>
+                    <h1 style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Dashboard</h1>
+                    <p style={{ color: 'var(--text-muted)', marginTop: 4 }}>
                         Welcome back, {user ? user.name : '...'}
                     </p>
                 </div>
-                <button style={{
+                <button onClick={() => setIsLogModalOpen(true)} style={{
                     background: 'var(--purple)', color: 'white',
                     border: 'none', borderRadius: 7, padding: '8px 16px',
                     fontWeight: 600, cursor: 'pointer'
@@ -66,8 +70,8 @@ export default function Dashboard() {
                         borderRadius: 10,
                         padding: '1rem',
                     }}>
-                        <div style={{  color: 'var(--text-muted)', marginBottom: 8 }}>{label}</div>
-                        <div style={{  fontWeight: 700, color }}>{value}</div>
+                        <div style={{ color: 'var(--text-muted)', marginBottom: 8 }}>{label}</div>
+                        <div style={{ fontWeight: 700, color }}>{value}</div>
                     </div>
                 ))}
             </div>
@@ -76,23 +80,23 @@ export default function Dashboard() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: '1.5rem' }}>
                 {/* Recent Workouts */}
                 <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '1rem' }}>
-                    <div style={{  fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Recent Workouts</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Recent Workouts</div>
 
                     {recentWorkouts.length === 0 ? (
-                        <div style={{  color: 'var(--text-muted)' }}>No workouts logged yet</div>
+                        <div style={{ color: 'var(--text-muted)' }}>No workouts logged yet</div>
                     ) : (
                         recentWorkouts.map((workout, index) => (
                             <div key={workout.id} style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                padding: '8px 0', 
+                                padding: '8px 0',
                                 borderBottom: index === recentWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)'
                             }}>
                                 <div>
                                     <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{workout.name}</div>
-                                    <div style={{  color: 'var(--text-muted)', marginTop: 2 }}>{workout.date} · {workout.durationMinutes} min</div>
+                                    <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>{workout.date} · {workout.durationMinutes} min</div>
                                 </div>
                                 <span style={{
-                                     fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+                                    fontWeight: 600, padding: '2px 8px', borderRadius: 4,
                                     background: 'var(--purple-bg)', color: 'var(--purple-light)'
                                 }}>{workout.splitCategory}</span>
                             </div>
@@ -100,7 +104,7 @@ export default function Dashboard() {
                     )}
 
                     <div style={{ marginTop: 12, paddingTop: 8, borderTop: '0.5px solid var(--border)' }}>
-                        <NavLink to="/workouts" style={{  color: 'var(--purple-light)', textDecoration: 'none' }}>
+                        <NavLink to="/workouts" style={{ color: 'var(--purple-light)', textDecoration: 'none' }}>
                             View all workouts →
                         </NavLink>
                     </div>
@@ -111,16 +115,16 @@ export default function Dashboard() {
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Latest Personal Records</div>
 
                     {latestPrs.length === 0 ? (
-                        <div style={{  color: 'var(--text-muted)' }}>No personal records yet</div>
+                        <div style={{ color: 'var(--text-muted)' }}>No personal records yet</div>
                     ) : (
                         latestPrs.map((pr, index) => (
                             <div key={pr.id} style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                padding: '8px 0', 
+                                padding: '8px 0',
                                 borderBottom: index === latestPrs.length - 1 ? 'none' : '0.5px solid var(--border)'
                             }}>
                                 <div>
-                                    <div style={{  fontWeight: 500, color: 'var(--text-primary)' }}>{pr.exerciseName}</div>
+                                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{pr.exerciseName}</div>
                                     <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>{pr.category} · {pr.achievedAt}</div>
                                 </div>
                                 <div style={{ fontWeight: 600, color: 'var(--teal)' }}>{pr.weight}kg × {pr.reps}</div>
@@ -128,7 +132,7 @@ export default function Dashboard() {
                         ))
                     )}
                     <div style={{ marginTop: 12, paddingTop: 8, borderTop: '0.5px solid var(--border)' }}>
-                        <NavLink to="/records" style={{  color: 'var(--purple-light)', textDecoration: 'none' }}>
+                        <NavLink to="/records" style={{ color: 'var(--purple-light)', textDecoration: 'none' }}>
                             View all records →
                         </NavLink>
                     </div>
@@ -158,6 +162,13 @@ export default function Dashboard() {
                     Today
                 </span>
             </div>
+
+            {isLogModalOpen && (
+                <LogWorkoutModal
+                    onClose={() => setIsLogModalOpen(false)}
+                    onLogged={() => setIsLogModalOpen(false)}
+                />
+            )}
         </div>
     )
 }

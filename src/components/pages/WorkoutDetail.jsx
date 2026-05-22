@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { apiClient } from '../../lib/apiClient'
 import { inputStyle } from '../../lib/styles'
 
+const SPLITS = ['PUSH', 'PULL', 'LEGS', 'UPPER_BODY', 'FULL_BODY', 'CARDIO', 'OTHER']
+
 export default function WorkoutDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -15,6 +17,10 @@ export default function WorkoutDetail() {
   const [editingSetId, setEditingSetId] = useState(null)
   const [editSetWeight, setEditSetWeight] = useState('')
   const [editSetReps, setEditSetReps] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+  const [editName, setEditName] = useState('')
+  const [editSplit, setEditSplit] = useState('')
+  const [editDuration, setEditDuration] = useState('')
 
   useEffect(() => {
     apiClient(`/api/workouts/${id}`)
@@ -86,6 +92,24 @@ export default function WorkoutDetail() {
     }
   }
 
+  const handleSaveEdit = async () => {
+    try {
+      await apiClient(`/api/workouts/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          name: editName,
+          splitCategory: editSplit,
+          durationMinutes: editDuration ? Number(editDuration) : null,
+          notes: workout.notes
+        })
+      })
+      setWorkout(prev => ({ ...prev, name: editName, splitCategory: editSplit, durationMinutes: editDuration ? Number(editDuration) : null }))
+      setIsEditing(false)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   const sortedSets = [...sets].sort((a, b) => a.id - b.id)
 
   if (!workout) return <div style={{ color: 'var(--text-muted)' }}>Loading...</div>
@@ -95,12 +119,66 @@ export default function WorkoutDetail() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1.5rem' }}>
         <button onClick={() => navigate('/workouts')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18 }}>←</button>
-        <div>
-          <h1 style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{workout.name}</h1>
-          <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>
-            {workout.splitCategory} · {workout.durationMinutes ? `${workout.durationMinutes} min` : '—'}
+
+        {isEditing ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+            <input
+              value={editName}
+              onChange={e => setEditName(e.target.value)}
+              className="input-field"
+              style={{ background: 'var(--bg-input)', color: 'var(--text-primary)', borderRadius: 6, padding: '6px 10px', border: '0.5px solid var(--border)', fontWeight: 700, fontSize: 18 }}
+            />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <select
+                value={editSplit}
+                onChange={e => setEditSplit(e.target.value)}
+                className="input-field"
+                style={{ background: 'var(--bg-input)', color: 'var(--text-muted)', borderRadius: 6, padding: '4px 8px', border: '0.5px solid var(--border)' }}
+              >
+                {SPLITS.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+              <input
+                type="number"
+                value={editDuration}
+                onChange={e => setEditDuration(e.target.value)}
+                placeholder="Duration (min)"
+                className="input-field"
+                style={{ background: 'var(--bg-input)', color: 'var(--text-muted)', borderRadius: 6, padding: '4px 8px', border: '0.5px solid var(--border)', width: 140 }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={handleSaveEdit}
+                style={{ background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 6, padding: '6px 14px', fontWeight: 600, cursor: 'pointer' }}>
+                Save
+              </button>
+              <button onClick={() => setIsEditing(false)}
+                style={{ background: 'transparent', color: 'var(--text-muted)', border: '0.5px solid var(--border)', borderRadius: 6, padding: '6px 14px', cursor: 'pointer' }}>
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{workout.name}</h1>
+            <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>
+              {workout.splitCategory} · {workout.durationMinutes ? `${workout.durationMinutes} min` : '—'}
+            </div>
+          </div>
+        )}
+
+        {!isEditing && (
+          <button onClick={() => {
+            setEditName(workout.name)
+            setEditSplit(workout.splitCategory)
+            setEditDuration(workout.durationMinutes || '')
+            setIsEditing(true)
+          }}
+            style={{ background: 'transparent', color: 'var(--text-muted)', border: '0.5px solid var(--border)', borderRadius: 6, padding: '6px 10px', cursor: 'pointer' }}>
+            ✏
+          </button>
+        )}
       </div>
 
       {/* Sets table */}
