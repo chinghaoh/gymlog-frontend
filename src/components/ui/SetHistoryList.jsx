@@ -1,5 +1,7 @@
 export default function SetHistoryList({ sets, prWeight, prReps }) {
-    const sortedSets = [...sets].sort((a, b) => Number(b.weight) - Number(a.weight))
+  const sortedSets = [...sets].sort((a, b) => new Date(b.workoutCreatedAt) - new Date(a.workoutCreatedAt))
+
+  const prIndex = sortedSets.findIndex(s => Number(s.weight) === Number(prWeight))
   
     return (
       <div style={{ background: 'var(--bg-input)', border: '0.5px solid var(--border)', borderRadius: 8, padding: 12 }}>
@@ -8,7 +10,7 @@ export default function SetHistoryList({ sets, prWeight, prReps }) {
         </div>
         <div style={{ maxHeight: 200, overflowY: 'auto', paddingRight: 8 }}>
           {sortedSets.map((set, i) => {
-            const isPR = Number(set.weight) === Number(prWeight) && set.reps === prReps
+                  const isPR = i === prIndex
             return (
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
