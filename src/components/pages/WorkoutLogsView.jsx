@@ -1,9 +1,12 @@
 import FilterPills from '../ui/FilterPills'
 import Pagination from '../ui/Pagination'
 import { apiClient } from '../../lib/ApiClient'
+import { useNavigate } from 'react-router-dom'
 
 export default function WorkoutLogsView({ workouts, onDelete, onFilterChange, activeFilter, currentPage, itemsPerPage, onPageChange }) {
   const filters = ['All', 'Push', 'Pull', 'Legs', 'Upper', 'Full Body', 'Cardio', ]
+  const navigate = useNavigate()
+
 
   const filterMap = {
     'Push': 'PUSH',
@@ -61,21 +64,39 @@ export default function WorkoutLogsView({ workouts, onDelete, onFilterChange, ac
             ) : (
               paginatedWorkouts.map((workout, index) => (
                 <tr key={workout.id}
-                  style={{ borderBottom: index === paginatedWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)' }}
+                  style={{ borderBottom: index === paginatedWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)', cursor: 'pointer' }}
+                  onClick={() => navigate(`/workouts/${workout.workoutId}`)}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>{workout.workoutName}</td>
+                  <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {workout.workoutName}
+                      {workout.aiGenerated && (
+                        <span style={{
+                          background: 'var(--cyan-bg)',
+                          color: 'var(--cyan)',
+                          border: '0.5px solid var(--cyan)',
+                          borderRadius: 4,
+                          padding: '1px 6px',
+                          fontSize: 11,
+                          fontWeight: 600
+                        }}>🤖 AI</span>
+                      )}
+                    </div>
+                  </td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{workout.date}</td>
                   <td style={{ padding: '10px 16px' }}>
                     <span style={{ background: 'var(--purple-bg)', color: 'var(--purple-light)', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>{workout.splitCategory}</span>
                   </td>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{workout.durationMinutes} min</td>
+                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>
+                    {workout.durationMinutes ? `${workout.durationMinutes} min` : '—'}
+                  </td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>
                     {workout.energyLevel ? `⚡ ${workout.energyLevel}/10` : '—'}
                   </td>
                   <td style={{ padding: '10px 16px', textAlign: 'right' }}>
-                    <button onClick={() => handleDelete(workout.id)}
+                    <button onClick={(e) => { e.stopPropagation(); handleDelete(workout.id) }}
                       style={{ background: 'transparent', color: 'var(--red)', border: '0.5px solid var(--red)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
                       Delete
                     </button>
