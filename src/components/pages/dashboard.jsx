@@ -104,7 +104,7 @@ export default function Dashboard() {
                     )}
 
                     <div style={{ marginTop: 12, paddingTop: 8, borderTop: '0.5px solid var(--border)' }}>
-                        <NavLink to="/workouts" style={{ color: 'var(--purple-light)', textDecoration: 'none' }}>
+                        <NavLink to="/logs" style={{ color: 'var(--purple-light)', textDecoration: 'none' }}>
                             View all logs →
                         </NavLink>
                     </div>

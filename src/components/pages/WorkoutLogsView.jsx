@@ -5,9 +5,19 @@ import { apiClient } from '../../lib/ApiClient'
 export default function WorkoutLogsView({ workouts, onDelete, onFilterChange, activeFilter, currentPage, itemsPerPage, onPageChange }) {
   const filters = ['All', 'Push', 'Pull', 'Legs', 'Upper', 'Full Body', 'Cardio']
 
+  const filterMap = {
+    'Push': 'PUSH',
+    'Pull': 'PULL',
+    'Legs': 'LEGS',
+    'Upper': 'UPPER_BODY',
+    'Full Body': 'FULL_BODY',
+    'Cardio': 'CARDIO',
+    'Other': 'OTHER'
+  }
+
   const filteredWorkouts = activeFilter === 'All'
-    ? workouts
-    : workouts.filter(w => w.splitCategory === activeFilter.toUpperCase())
+  ? workouts
+  : workouts.filter(w => w.splitCategory === filterMap[activeFilter])
 
   const paginatedWorkouts = filteredWorkouts.slice(
     (currentPage - 1) * itemsPerPage,
