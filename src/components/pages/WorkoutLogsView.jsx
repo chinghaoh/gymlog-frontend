@@ -16,8 +16,8 @@ export default function WorkoutLogsView({ workouts, onDelete, onFilterChange, ac
   }
 
   const filteredWorkouts = activeFilter === 'All'
-  ? workouts
-  : workouts.filter(w => w.splitCategory === filterMap[activeFilter])
+    ? workouts
+    : workouts.filter(w => w.splitCategory === filterMap[activeFilter])
 
   const paginatedWorkouts = filteredWorkouts.slice(
     (currentPage - 1) * itemsPerPage,
@@ -67,7 +67,9 @@ export default function WorkoutLogsView({ workouts, onDelete, onFilterChange, ac
                     <span style={{ background: 'var(--purple-bg)', color: 'var(--purple-light)', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>{workout.splitCategory}</span>
                   </td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{workout.durationMinutes} min</td>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>⚡ {workout.energyLevel}/10</td>
+                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>
+                    {workout.energyLevel ? `⚡ ${workout.energyLevel}/10` : '—'}
+                  </td>                  
                   <td style={{ padding: '10px 16px', textAlign: 'right' }}>
                     <button onClick={() => handleDelete(workout.id)}
                       style={{ background: 'transparent', color: 'var(--red)', border: '0.5px solid var(--red)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
