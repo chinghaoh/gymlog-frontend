@@ -6,12 +6,15 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
   const { user } = useAuth()
   const [name, setName] = useState('')
   const [splitCategory, setSplitCategory] = useState('PUSH')
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
-  const [durationMinutes, setDurationMinutes] = useState('')
-  const [notes, setNotes] = useState('')
+  const [durationMinutes, setDurationMinutes] = useState('60')
+  const [error, setError] = useState('')
 
   const handleSubmit = async () => {
-    if (!name || !durationMinutes) return
+    if (!name.trim()) {
+      setError('Please enter a workout name')
+      return
+    }
+    setError('')
 
     try {
       const newWorkout = await apiClient(`/api/workouts?userId=${user.id}`, {
@@ -19,14 +22,14 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
         body: JSON.stringify({
           name,
           splitCategory,
-          durationMinutes: Number(durationMinutes),
-          notes
+          durationMinutes: Number(durationMinutes)
         })
       })
       onCreated(newWorkout)
       onClose()
     } catch (err) {
       console.error(err)
+      setError('Something went wrong. Please try again.')
     }
   }
 
@@ -55,23 +58,20 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
           <div>
             <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Split</label>
             <select value={splitCategory} onChange={e => setSplitCategory(e.target.value)} className="input-field" style={inputStyle}>
-              {['PUSH', 'PULL', 'LEGS', 'UPPER', 'FULL_BODY', 'CARDIO'].map(s => (
+              {['PUSH', 'PULL', 'LEGS', 'UPPER_BODY', 'FULL_BODY', 'CARDIO', 'OTHER'].map(s => (
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
 
-          <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Duration (min)</label>
-              <input className="input-field" type="number" value={durationMinutes} onChange={e => setDurationMinutes(e.target.value)} placeholder="60" style={inputStyle} />
-            </div>
+          <div>
+            <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Duration (min)</label>
+            <input className="input-field" type="number" value={durationMinutes} onChange={e => setDurationMinutes(e.target.value)} placeholder="60" style={inputStyle} />
           </div>
 
-          <div>
-            <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Notes (optional)</label>
-            <input className="input-field" type="text" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any notes..." style={inputStyle} />
-          </div>
+          {error && (
+            <div style={{ color: 'var(--red)', fontSize: 13 }}>{error}</div>
+          )}
         </div>
 
         {/* Footer */}
