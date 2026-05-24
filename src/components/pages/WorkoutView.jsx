@@ -25,8 +25,8 @@ export default function WorkoutView({ workouts, onDelete }) {
   }
 
   const filteredWorkouts = activeFilter === 'All'
-  ? workouts
-  : workouts.filter(w => w.splitCategory === filterMap[activeFilter])
+    ? workouts
+    : workouts.filter(w => w.splitCategory === filterMap[activeFilter])
 
   const paginatedWorkouts = filteredWorkouts.slice(
     (currentPage - 1) * itemsPerPage,
@@ -60,8 +60,17 @@ export default function WorkoutView({ workouts, onDelete }) {
           <tbody>
             {paginatedWorkouts.length === 0 ? (
               <tr>
-                <td colSpan={4} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  No workouts yet — create one with "+ New Workout"
+                <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <div style={{ marginBottom: 8 }}>🏋️</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>No workouts yet</div>
+                  <div style={{ color: 'var(--text-muted)', marginBottom: 12, fontSize: 14 }}>
+                    Create your first workout manually or let the AI Trainer build one for you.
+                  </div>
+                  <button
+                    onClick={() => navigate('/ai')}
+                    style={{ background: 'var(--purple)', color: 'white', borderRadius: 7, padding: '7px 14px', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: 14 }}>
+                    Try AI Trainer
+                  </button>
                 </td>
               </tr>
             ) : (

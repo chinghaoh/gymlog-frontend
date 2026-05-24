@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react'
 import { apiClient } from '../../lib/apiClient'
 import { useAuth } from '../context/AuthContext'
 import ExerciseProgressModal from '../ui/ExerciseModalComponent/ExerciseProgressModel'
+import { useNavigate } from 'react-router-dom'
+
 
 export default function Records() {
     const { user } = useAuth()
+    const navigate = useNavigate()    
 
     const [records, setRecords] = useState([])
     const [loading, setLoading] = useState(true)
@@ -115,7 +118,20 @@ export default function Records() {
                         {loading ? (
                             <tr><td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</td></tr>
                         ) : paginatedRecords.length === 0 ? (
-                            <tr><td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No personal records yet — start logging sets!</td></tr>
+                            <tr>
+                                <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                                    <div style={{ marginBottom: 8, fontSize: 24 }}>🏆</div>
+                                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>No personal records yet</div>
+                                    <div style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 12 }}>
+                                        Log a workout to start tracking your PRs.
+                                    </div>
+                                    <button
+                                        onClick={() => navigate('/logs')}
+                                        style={{ background: 'var(--purple)', color: 'white', borderRadius: 7, padding: '7px 14px', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: 14 }}>
+                                        Log a Workout
+                                    </button>
+                                </td>
+                            </tr>
                         ) : (
                             paginatedRecords.map((record, index) => (
                                 <tr

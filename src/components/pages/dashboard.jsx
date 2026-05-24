@@ -4,12 +4,14 @@ import { apiClient } from "../../lib/ApiClient"
 import { NavLink } from "react-router-dom"
 import ActivityCalendar from "../ui/ActivityCalendar"
 import LogWorkoutModal from "../ui/WorkoutModalComponents/LogWorkoutModal"
+import { useNavigate } from "react-router-dom"
 
 
 export default function Dashboard() {
     const { user, setUser } = useAuth()
-    const [summary, setSummary] = useState(null)
+    const navigate = useNavigate()    
 
+    const [summary, setSummary] = useState(null)
     const [recentWorkouts, setRecentWorkouts] = useState([])
     const [latestPrs, setLatestPrs] = useState([])
     const [isLogModalOpen, setIsLogModalOpen] = useState(false)
@@ -83,7 +85,25 @@ export default function Dashboard() {
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Recent Workouts</div>
 
                     {recentWorkouts.length === 0 ? (
-                        <div style={{ color: 'var(--text-muted)' }}>No workouts logged yet</div>
+                        <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+                            <div style={{ fontSize: 24, marginBottom: 8 }}>👋</div>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>Welcome to GymLog!</div>
+                            <div style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 12 }}>
+                                Get started by letting your AI trainer create your first workout, or build one yourself.
+                            </div>
+                            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                                <button
+                                    onClick={() => navigate('/ai')}
+                                    style={{ background: 'var(--purple)', color: 'white', borderRadius: 7, padding: '7px 14px', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: 14 }}>
+                                    🤖 Try AI Trainer
+                                </button>
+                                <button
+                                    onClick={() => navigate('/workouts')}
+                                    style={{ background: 'transparent', color: 'var(--text-muted)', borderRadius: 7, padding: '7px 14px', fontWeight: 600, border: '0.5px solid var(--border)', cursor: 'pointer', fontSize: 14 }}>
+                                    Create Workout
+                                </button>
+                            </div>
+                        </div>
                     ) : (
                         recentWorkouts.map((workout, index) => (
                             <div key={workout.id} style={{

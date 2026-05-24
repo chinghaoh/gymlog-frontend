@@ -3,9 +3,13 @@ import { apiClient } from '../../lib/ApiClient'
 import { useAuth } from '../context/AuthContext'
 import CreateWorkoutModal from '../ui/WorkoutModalComponents/CreateWorkoutModal'
 import WorkoutView from './WorkoutView'
+import { useNavigate } from 'react-router-dom'
+
 
 export default function Workouts() {
   const { user } = useAuth()
+  const navigate = useNavigate()
+
   const [workouts, setWorkouts] = useState([])
   const [isCreateWorkoutOpen, setIsCreateWorkoutOpen] = useState(false)
 
@@ -38,6 +42,7 @@ export default function Workouts() {
           onCreated={(newWorkout) => {
             setWorkouts(prev => [newWorkout, ...prev])
             setIsCreateWorkoutOpen(false)
+            navigate(`/workouts/${newWorkout.id}`)
           }}
         />
       )}

@@ -118,7 +118,7 @@ export default function WorkoutDetail() {
     <div>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1.5rem' }}>
-        <button onClick={() => navigate('/workouts')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18 }}>←</button>
+        <button onClick={() => navigate('/workouts')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>←</button>
 
         {isEditing ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
@@ -175,7 +175,14 @@ export default function WorkoutDetail() {
             setEditDuration(workout.durationMinutes || '')
             setIsEditing(true)
           }}
-            style={{ background: 'transparent', color: 'var(--text-muted)', border: '0.5px solid var(--border)', borderRadius: 6, padding: '6px 10px', cursor: 'pointer' }}>
+            style={{
+              background: 'var(--purple)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 6,
+              padding: '6px 10px',
+              cursor: 'pointer'
+            }}>
             ✏
           </button>
         )}

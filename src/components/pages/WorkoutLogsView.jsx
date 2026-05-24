@@ -51,7 +51,11 @@ export default function WorkoutLogsView({ workouts, onDelete, onFilterChange, ac
             {paginatedWorkouts.length === 0 ? (
               <tr>
                 <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  No workouts logged yet
+                  <div style={{ marginBottom: 8}}>📋</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>No logs yet</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: 14 }}>
+                    Complete a workout and log it here to track your progress.
+                  </div>
                 </td>
               </tr>
             ) : (
@@ -69,7 +73,7 @@ export default function WorkoutLogsView({ workouts, onDelete, onFilterChange, ac
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{workout.durationMinutes} min</td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>
                     {workout.energyLevel ? `⚡ ${workout.energyLevel}/10` : '—'}
-                  </td>                  
+                  </td>
                   <td style={{ padding: '10px 16px', textAlign: 'right' }}>
                     <button onClick={() => handleDelete(workout.id)}
                       style={{ background: 'transparent', color: 'var(--red)', border: '0.5px solid var(--red)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>
