@@ -87,6 +87,18 @@ export default function ExerciseDetail() {
                 </div>
             </div>
 
+            {/* Instructions */}
+            {exercise.instructions && (
+                <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
+                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 10 }}>Instructions</div>
+                    <ol style={{ margin: 0, paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {exercise.instructions.split('\n').map((step, i) => (
+                            <li key={i} style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>{step}</li>
+                        ))}
+                    </ol>
+                </div>
+            )}
+
             {/* PR strip */}
             {pr && (
                 <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '14px 16px', display: 'flex', gap: 12 }}>

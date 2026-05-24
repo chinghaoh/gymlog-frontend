@@ -21,7 +21,7 @@ export default function WeightProgressionChart({ sets, prWeight }) {
       <div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
         Weight progression
       </div>
-      <ResponsiveContainer width="100%" height={120}>
+      <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data}>
           <XAxis dataKey="date" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
           <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} width={35} />

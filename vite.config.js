@@ -14,9 +14,6 @@ export default defineConfig({
         changeOrigin: true,
         cookieDomainRewrite: 'localhost',
       }
-    },
-    watch: {
-      usePolling: true,
     }
   }
 })

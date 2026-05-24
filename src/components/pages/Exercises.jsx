@@ -87,12 +87,12 @@ export default function Exercises() {
             </div>
 
             {/* Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem',alignItems: 'stretch' }}>
                 {paginatedExercises.map((exercise) => (
                     <div key={exercise.id}
                         className='clickable'
                         onClick={() => navigate(`/exercises/${exercise.id}`)}
-                        style={{ background: 'var(--bg-card)', borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column', cursor:'pointer' }}>
+                        style={{ background: 'var(--bg-card)', borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column', cursor:'pointer', height:'100%' }}>
 
                         {/* GIF */}
                         <div style={{ height: 160, background: 'var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

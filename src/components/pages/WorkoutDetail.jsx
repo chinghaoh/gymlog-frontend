@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { apiClient } from '../../lib/apiClient'
 import { inputStyle } from '../../lib/styles'
 
-const SPLITS = ['PUSH', 'PULL', 'LEGS', 'UPPER_BODY', 'FULL_BODY', 'CARDIO', 'OTHER']
+const SPLITS = ['PUSH', 'PULL', 'LEGS', 'UPPER_BODY', 'FULL_BODY', 'CARDIO',]
 
 export default function WorkoutDetail() {
   const { id } = useParams()
@@ -21,6 +21,8 @@ export default function WorkoutDetail() {
   const [editName, setEditName] = useState('')
   const [editSplit, setEditSplit] = useState('')
   const [editDuration, setEditDuration] = useState('')
+  const [exerciseSearch, setExerciseSearch] = useState('')
+  const [showExerciseDropdown, setShowExerciseDropdown] = useState(false)
 
   useEffect(() => {
     apiClient(`/api/workouts/${id}`)
@@ -111,6 +113,12 @@ export default function WorkoutDetail() {
     }
   }
 
+  useEffect(() => {
+    const handleClickOutside = () => setShowExerciseDropdown(false)
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
+
 
   if (!workout) return <div style={{ color: 'var(--text-muted)' }}>Loading...</div>
 
@@ -188,6 +196,74 @@ export default function WorkoutDetail() {
         )}
       </div>
 
+      {/* Add set form */}
+      <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '1rem', display: 'flex', gap: 12, alignItems: 'flex-end', marginBottom: '1rem', position: 'relative', zIndex: 10 }}>
+      <div style={{ flex: 2, position: 'relative' }}>
+          <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Exercise</label>
+          <input
+            className="input-field"
+            value={exerciseSearch}
+            onChange={e => {
+              setExerciseSearch(e.target.value)
+              setShowExerciseDropdown(true)
+              setSelectedExerciseId('')
+            }}
+            onFocus={() => setShowExerciseDropdown(true)}
+            onClick={e => e.stopPropagation()}
+            placeholder="Search exercise..."
+            style={inputStyle}
+          />
+          {showExerciseDropdown && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, right: 0,
+              background: 'var(--bg-card)', border: '0.5px solid var(--border)',
+              borderRadius: 6, maxHeight: 200, overflowY: 'auto', zIndex: 100
+            }}>
+              {exercises
+                .filter(ex => ex.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
+                .map(ex => (
+                  <div
+                    key={ex.id}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setSelectedExerciseId(ex.id)
+                      setExerciseSearch(ex.name)
+                      setShowExerciseDropdown(false)
+                    }}
+                    style={{
+                      padding: '8px 12px',
+                      cursor: 'pointer',
+                      color: 'var(--text-primary)',
+                      borderBottom: '0.5px solid var(--border)'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--border-light)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    {ex.name}
+                  </div>
+                ))
+              }
+              {exercises.filter(ex => ex.name.toLowerCase().includes(exerciseSearch.toLowerCase())).length === 0 && (
+                <div style={{ padding: '8px 12px', color: 'var(--text-muted)' }}>No exercises found</div>
+              )}
+            </div>
+          )}
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Weight (kg)</label>
+          <input className="input-field" type="number" value={weight}
+            onChange={e => setWeight(e.target.value)} style={inputStyle} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Reps</label>
+          <input className="input-field" type="number" value={reps}
+            onChange={e => setReps(e.target.value)} style={inputStyle} />
+        </div>
+        <button onClick={handleAddSet} style={{ background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 7, padding: '9px 16px', fontWeight: 600, cursor: 'pointer' }}>
+          + Add Set
+        </button>
+      </div>
+
       {/* Sets table */}
       <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, overflow: 'hidden', marginBottom: '1rem' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -257,33 +333,6 @@ export default function WorkoutDetail() {
             )}
           </tbody>
         </table>
-      </div>
-
-      {/* Add set form */}
-      <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '1rem', display: 'flex', gap: 12, alignItems: 'flex-end' }}>
-        <div style={{ flex: 2 }}>
-          <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Exercise</label>
-          <select value={selectedExerciseId} onChange={e => setSelectedExerciseId(e.target.value)}
-            className="input-field" style={inputStyle}>
-            <option value=''>Select an exercise</option>
-            {exercises.map(ex => (
-              <option key={ex.id} value={ex.id}>{ex.name}</option>
-            ))}
-          </select>
-        </div>
-        <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Weight (kg)</label>
-          <input className="input-field" type="number" value={weight}
-            onChange={e => setWeight(e.target.value)} style={inputStyle} />
-        </div>
-        <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Reps</label>
-          <input className="input-field" type="number" value={reps}
-            onChange={e => setReps(e.target.value)} style={inputStyle} />
-        </div>
-        <button onClick={handleAddSet} style={{ background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 7, padding: '9px 16px', fontWeight: 600, cursor: 'pointer' }}>
-          + Add Set
-        </button>
       </div>
     </div>
   )

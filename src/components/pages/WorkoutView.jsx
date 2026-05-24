@@ -12,7 +12,7 @@ export default function WorkoutView({ workouts, onDelete }) {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
-  const filters = ['All', 'Push', 'Pull', 'Legs', 'Upper', 'Full Body', 'Cardio', 'Other']
+  const filters = ['All', 'Push', 'Pull', 'Legs', 'Upper', 'Full Body', 'Cardio']
 
   const filterMap = {
     'Push': 'PUSH',
@@ -21,7 +21,6 @@ export default function WorkoutView({ workouts, onDelete }) {
     'Upper': 'UPPER_BODY',
     'Full Body': 'FULL_BODY',
     'Cardio': 'CARDIO',
-    'Other': 'OTHER'
   }
 
   const filteredWorkouts = activeFilter === 'All'

@@ -3,7 +3,7 @@ import Pagination from '../ui/Pagination'
 import { apiClient } from '../../lib/ApiClient'
 
 export default function WorkoutLogsView({ workouts, onDelete, onFilterChange, activeFilter, currentPage, itemsPerPage, onPageChange }) {
-  const filters = ['All', 'Push', 'Pull', 'Legs', 'Upper', 'Full Body', 'Cardio']
+  const filters = ['All', 'Push', 'Pull', 'Legs', 'Upper', 'Full Body', 'Cardio', ]
 
   const filterMap = {
     'Push': 'PUSH',
@@ -51,7 +51,7 @@ export default function WorkoutLogsView({ workouts, onDelete, onFilterChange, ac
             {paginatedWorkouts.length === 0 ? (
               <tr>
                 <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  <div style={{ marginBottom: 8}}>📋</div>
+                  <div style={{ marginBottom: 8, fontSize: 24 }}>📋</div>
                   <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>No logs yet</div>
                   <div style={{ color: 'var(--text-muted)', fontSize: 14 }}>
                     Complete a workout and log it here to track your progress.
