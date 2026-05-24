@@ -1,41 +1,31 @@
+const btnPrimary = "bg-purple text-white border-none rounded-lg px-4 py-2 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+const btnGhost = "bg-transparent text-text-muted border-half rounded-lg px-4 py-2 text-sm cursor-pointer hover:text-text-primary transition-colors"
+const btnDanger = "bg-transparent text-red border-half-red rounded-lg px-4 py-2 text-sm cursor-pointer hover:bg-red-bg transition-colors ml-auto"
+
 export default function WorkoutModalFooter({ editing, addingSet, onSaveEdit, onCancelEdit, onSaveSet, onCancelSet, onAddSet, onEdit, onDelete }) {
     if (editing) {
-      return (
-        <div style={{ padding: '1rem 1.25rem', borderTop: '0.5px solid var(--border)', display: 'flex', gap: 8 }}>
-          <button onClick={onSaveEdit} style={{ background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 7, padding: '8px 16px', fontWeight: 600, cursor: 'pointer' }}>
-            Save Changes
-          </button>
-          <button onClick={onCancelEdit} style={{ background: 'transparent', color: 'var(--text-muted)', border: '0.5px solid var(--border)', borderRadius: 7, padding: '8px 16px', cursor: 'pointer' }}>
-            Cancel
-          </button>
-        </div>
-      )
+        return (
+            <div className="flex gap-2 px-5 py-4">
+                <button onClick={onSaveEdit} className={btnPrimary}>Save Changes</button>
+                <button onClick={onCancelEdit} className={btnGhost}>Cancel</button>
+            </div>
+        )
     }
-  
+
     if (addingSet) {
-      return (
-        <div style={{ padding: '1rem 1.25rem', borderTop: '0.5px solid var(--border)', display: 'flex', gap: 8 }}>
-          <button onClick={onSaveSet} style={{ background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 7, padding: '8px 16px', fontWeight: 600, cursor: 'pointer' }}>
-            Save Set
-          </button>
-          <button onClick={onCancelSet} style={{ background: 'transparent', color: 'var(--text-muted)', border: '0.5px solid var(--border)', borderRadius: 7, padding: '8px 16px', cursor: 'pointer' }}>
-            Cancel
-          </button>
-        </div>
-      )
+        return (
+            <div className="flex gap-2 px-5 py-4">
+                <button onClick={onSaveSet} className={btnPrimary}>Save Set</button>
+                <button onClick={onCancelSet} className={btnGhost}>Cancel</button>
+            </div>
+        )
     }
-  
+
     return (
-      <div style={{ padding: '1rem 1.25rem', borderTop: '0.5px solid var(--border)', display: 'flex', gap: 8 }}>
-        <button onClick={onAddSet} style={{ background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 7, padding: '8px 16px', fontWeight: 600, cursor: 'pointer' }}>
-          + Add Set
-        </button>
-        <button onClick={onEdit} style={{ background: 'transparent', color: 'var(--text-muted)', border: '0.5px solid var(--border)', borderRadius: 7, padding: '8px 16px', cursor: 'pointer' }}>
-          Edit
-        </button>
-        <button onClick={onDelete} style={{ background: 'transparent', color: 'var(--red)', border: '0.5px solid var(--red)', borderRadius: 7, padding: '8px 16px', cursor: 'pointer', marginLeft: 'auto' }}>
-          Delete
-        </button>
-      </div>
+        <div className="flex gap-2 px-5 py-4">
+            <button onClick={onAddSet} className={btnPrimary}>+ Add Set</button>
+            <button onClick={onEdit} className={btnGhost}>Edit</button>
+            <button onClick={onDelete} className={btnDanger}>Delete</button>
+        </div>
     )
-  }
+}

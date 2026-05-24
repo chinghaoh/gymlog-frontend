@@ -13,83 +13,69 @@ export default function SecuritySection() {
   const [success, setSuccess] = useState(false)
 
   const handleChangePassword = async () => {
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match.')
-      return
-    }
+      if (newPassword !== confirmPassword) {
+          setError('Passwords do not match.')
+          return
+      }
 
-    setLoading(true)
-    setError(null)
-    setSuccess(false)
+      setLoading(true)
+      setError(null)
+      setSuccess(false)
 
-    try {
-      await apiClient(`/api/users/${user.id}/password`, {
-        method: 'PUT',
-        body: JSON.stringify({ currentPassword, newPassword }),
-      })
-      setSuccess(true)
-      setCurrentPassword('')
-      setNewPassword('')
-      setConfirmPassword('')
-    } catch (err) {
-      setError(err.message || 'Failed to change password.')
-    } finally {
-      setLoading(false)
-    }
+      try {
+          await apiClient(`/api/users/${user.id}/password`, {
+              method: 'PUT',
+              body: JSON.stringify({ currentPassword, newPassword }),
+          })
+          setSuccess(true)
+          setCurrentPassword('')
+          setNewPassword('')
+          setConfirmPassword('')
+      } catch (err) {
+          setError(err.message || 'Failed to change password.')
+      } finally {
+          setLoading(false)
+      }
   }
 
+  const inputClass = "w-full bg-bg-input border-half rounded-md px-2.5 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
+  const labelClass = "text-text-muted text-xs uppercase tracking-wider block mb-1.5"
+
   return (
-    <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
-      <div style={{ fontWeight: 600, color: 'var(--text-primary)', paddingBottom: 10, borderBottom: '0.5px solid var(--border)', marginBottom: 12 }}>
-        Change password
+      <div className="bg-bg-card border-half rounded-xl px-4 py-3.5">
+          <div className="font-semibold text-text-primary pb-2.5 mb-3">
+              Change password
+          </div>
+
+          <div className="mb-2.5">
+              <label className={labelClass}>Current password</label>
+              <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} className={inputClass} />
+          </div>
+
+          <div className="mb-2.5">
+              <label className={labelClass}>New password</label>
+              <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className={inputClass} />
+          </div>
+
+          <div className="mb-2.5">
+              <label className={labelClass}>Confirm new password</label>
+              <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className={inputClass} />
+          </div>
+
+          {error && <div className="text-red text-sm mb-2">{error}</div>}
+          {success && <div className="text-teal text-sm mb-2">Password changed successfully.</div>}
+
+          <button
+              onClick={handleChangePassword}
+              disabled={loading}
+              className={`mt-1 px-3.5 py-1.5 rounded-md text-sm font-semibold border-none transition-opacity
+                  ${loading
+                      ? 'bg-border text-text-muted cursor-not-allowed'
+                      : 'bg-purple text-white cursor-pointer hover:opacity-90'
+                  }`}
+          >
+              {loading ? 'Updating...' : 'Update password'}
+          </button>
       </div>
-
-      <div style={{ marginBottom: 10 }}>
-        <label style={{ color: 'var(--text-muted)', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Current password</label>
-        <input
-          className="input-field"
-          type="password"
-          value={currentPassword}
-          onChange={e => setCurrentPassword(e.target.value)}
-          style={{ width: '100%', background: 'var(--bg-input)', borderRadius: 6, padding: '8px 10px', color: 'var(--text-primary)', outline: 'none' }}
-        />
-      </div>
-
-      <div style={{ marginBottom: 10 }}>
-        <label style={{ color: 'var(--text-muted)', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>New password</label>
-        <input
-          className="input-field"
-          type="password"
-          value={newPassword}
-          onChange={e => setNewPassword(e.target.value)}
-          style={{ width: '100%', background: 'var(--bg-input)', borderRadius: 6, padding: '8px 10px', color: 'var(--text-primary)', outline: 'none' }}
-        />
-      </div>
-
-      <div style={{ marginBottom: 10 }}>
-        <label style={{ color: 'var(--text-muted)', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Confirm new password</label>
-        <input
-          className="input-field"
-          type="password"
-          value={confirmPassword}
-          onChange={e => setConfirmPassword(e.target.value)}
-          style={{ width: '100%', background: 'var(--bg-input)', borderRadius: 6, padding: '8px 10px', color: 'var(--text-primary)', outline: 'none' }}
-        />
-      </div>
-
-      {error && <div style={{ color: 'var(--red)', marginBottom: 8 }}>{error}</div>}
-      {success && <div style={{ color: 'var(--teal)', marginBottom: 8 }}>Password changed successfully.</div>}
-
-      <button
-        onClick={handleChangePassword}
-        disabled={loading}
-        style={{
-          background: loading ? 'var(--border)' : 'var(--purple)',
-          border: 'none', borderRadius: 6, padding: '7px 14px',
-          fontWeight: 600, color: 'white', cursor: loading ? 'default' : 'pointer',
-          marginTop: 4,
-        }}
-      >{loading ? 'Updating...' : 'Update password'}</button>
-    </div>
   )
 }

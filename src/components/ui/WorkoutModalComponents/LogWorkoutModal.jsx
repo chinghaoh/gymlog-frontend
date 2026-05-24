@@ -3,111 +3,122 @@ import { apiClient } from '../../../lib/ApiClient'
 import { useAuth } from '../../context/AuthContext'
 import { inputStyle } from '../../../lib/styles'
 
+const inputClass = "w-full bg-bg-input border-half rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
+const labelClass = "block text-text-muted text-sm mb-1.5"
+
 export default function LogWorkoutModal({ onClose, onLogged }) {
-  const { user } = useAuth()
-  const [workouts, setWorkouts] = useState([])
-  const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
-  const [energyLevel, setEnergyLevel] = useState('5')
-  const [error, setError] = useState('')
+    const { user } = useAuth()
+    const [workouts, setWorkouts] = useState([])
+    const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+    const [energyLevel, setEnergyLevel] = useState('5')
+    const [error, setError] = useState('')
 
+    useEffect(() => {
+        if (!user) return
+        apiClient(`/api/workouts?userId=${user.id}`)
+            .then(data => setWorkouts(data))
+            .catch(err => console.error(err))
+    }, [user])
 
-  useEffect(() => {
-    if (!user) return
-    apiClient(`/api/workouts?userId=${user.id}`)
-      .then(data => setWorkouts(data))
-      .catch(err => console.error(err))
-  }, [user])
-
-  const handleSubmit = async () => {
-    if (!selectedWorkoutId) {
-      setError('Please select a workout')
-      return
-    }
-    if (!date) {
-      setError('Please select a date')
-      return
-    }
-    setError('')
-    try {
-      const newLog = await apiClient(
-        `/api/workoutlogs?userId=${user.id}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            workoutId: Number(selectedWorkoutId),
-            date: date,
-            energyLevel: energyLevel ? Number(energyLevel) : 5
-          })
+    const handleSubmit = async () => {
+        if (!selectedWorkoutId) { setError('Please select a workout'); return }
+        if (!date) { setError('Please select a date'); return }
+        setError('')
+        try {
+            const newLog = await apiClient(`/api/workoutlogs?userId=${user.id}`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    workoutId: Number(selectedWorkoutId),
+                    date,
+                    energyLevel: energyLevel ? Number(energyLevel) : 5
+                })
+            })
+            onLogged(newLog)
+            onClose()
+        } catch (err) {
+            console.error(err)
         }
-      )
-      onLogged(newLog)
-      onClose()
-    } catch (err) {
-      console.error(err)
     }
-  }
 
-  return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 12, width: '100%', maxWidth: 440, display: 'flex', flexDirection: 'column' }}>
+    return (
+        <div
+            onClick={onClose}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+        >
+            <div
+                onClick={e => e.stopPropagation()}
+                className="bg-bg-card border-half rounded-xl w-full max-w-md flex flex-col"
+            >
+                {/* Header */}
+                <div className="flex items-center justify-between px-5 py-4">
+                    <div className="font-bold text-text-primary">Log Workout</div>
+                    <button
+                        onClick={onClose}
+                        className="bg-transparent border-none text-text-muted cursor-pointer text-lg hover:text-text-primary transition-colors"
+                    >
+                        ✕
+                    </button>
+                </div>
 
-        {/* Header */}
-        <div style={{ padding: '1rem 1.25rem', borderBottom: '0.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Log Workout</div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 18 }}>✕</button>
-        </div>
+                {/* Body */}
+                <div className="px-5 py-4 flex flex-col gap-3">
+                    <div>
+                        <label className={labelClass}>Workout</label>
+                        <div className="relative">
+                            <select
+                                value={selectedWorkoutId}
+                                onChange={e => setSelectedWorkoutId(e.target.value)}
+                                className={`${inputClass} appearance-none pr-8`}
+                            >
+                                <option value=''>Select a workout</option>
+                                {workouts.map(w => (
+                                    <option key={w.id} value={w.id}>{w.name} — {w.splitCategory}</option>
+                                ))}
+                            </select>
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">▾</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label className={labelClass}>Date</label>
+                        <input
+                            type="date"
+                            value={date}
+                            onChange={e => setDate(e.target.value)}
+                            className={inputClass}
+                        />
+                    </div>
+                    <div>
+                        <label className={labelClass}>Energy level (1-10)</label>
+                        <input
+                            type="number"
+                            min="1"
+                            max="10"
+                            value={energyLevel}
+                            onChange={e => setEnergyLevel(e.target.value)}
+                            placeholder="8"
+                            className={inputClass}
+                        />
+                    </div>
+                    {error && <div className="text-red text-sm">{error}</div>}
+                </div>
 
-        {/* Body */}
-        <div style={{ padding: '1rem 1.25rem', display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div>
-            <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Workout</label>
-            <div style={{ position: 'relative' }}>
-              <select
-                value={selectedWorkoutId}
-                onChange={e => setSelectedWorkoutId(e.target.value)}
-                className="input-field"
-                style={{ ...inputStyle, appearance: 'none', WebkitAppearance: 'none', paddingRight: 32 }}
-              >
-                <option value=''>Select a workout</option>
-                {workouts.map(w => (
-                  <option key={w.id} value={w.id}>{w.name} — {w.splitCategory}</option>
-                ))}
-              </select>
-              <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>▾</span>
+                {/* Footer */}
+                <div className="flex gap-2 px-5 py-4 border-t border-half">
+                    <button
+                        onClick={handleSubmit}
+                        className="bg-purple text-white border-none rounded-lg px-4 py-2 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+                    >
+                        Log Workout
+                    </button>
+                    <button
+                        onClick={onClose}
+                        className="bg-transparent text-text-muted border-half rounded-lg px-4 py-2 text-sm cursor-pointer hover:text-text-primary transition-colors"
+                    >
+                        Cancel
+                    </button>
+                </div>
             </div>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Date</label>
-            <input className="input-field" type="date" value={date}
-              onChange={e => setDate(e.target.value)} style={inputStyle} />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Energy level (1-10)</label>
-            <input className="input-field" type="number" min="1" max="10" value={energyLevel}
-              onChange={e => setEnergyLevel(e.target.value)} placeholder="8" style={inputStyle} />
-          </div>
         </div>
-
-        {error && (
-          <div style={{ padding: '0 1.25rem 0.5rem', color: 'var(--red)' }}>
-            {error}
-          </div>
-        )}
-
-        {/* Footer */}
-        <div style={{ padding: '1rem 1.25rem', borderTop: '0.5px solid var(--border)', display: 'flex', gap: 8 }}>
-          <button onClick={handleSubmit} style={{ background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 7, padding: '8px 16px', fontWeight: 600, cursor: 'pointer' }}>
-            Log Workout
-          </button>
-          <button onClick={onClose} style={{ background: 'transparent', color: 'var(--text-muted)', border: '0.5px solid var(--border)', borderRadius: 7, padding: '8px 16px', cursor: 'pointer' }}>
-            Cancel
-          </button>
-        </div>
-
-      </div>
-    </div>
-  )
+    )
 }

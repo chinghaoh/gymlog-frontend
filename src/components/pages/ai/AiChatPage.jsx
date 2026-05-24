@@ -4,23 +4,26 @@ import { getAiContext, generateWorkout, saveFitnessLevel } from '../../services/
 import { useAuth } from '../../context/AuthContext'
 
 const SPLITS = [
-    { label: 'Push Day', value: 'PUSH' },
-    { label: 'Pull Day', value: 'PULL' },
-    { label: 'Leg Day', value: 'LEGS' },
-    { label: 'Upper Body', value: 'UPPER_BODY' },
-    { label: 'Full Body', value: 'FULL_BODY' },
+    { label: 'Push Day',    value: 'PUSH' },
+    { label: 'Pull Day',    value: 'PULL' },
+    { label: 'Leg Day',     value: 'LEGS' },
+    { label: 'Upper Body',  value: 'UPPER_BODY' },
+    { label: 'Full Body',   value: 'FULL_BODY' },
 ]
 
 const LEVELS = [
-    { label: 'Beginner', value: 'BEGINNER', desc: 'Less than 1 year of training' },
+    { label: 'Beginner',     value: 'BEGINNER',     desc: 'Less than 1 year of training' },
     { label: 'Intermediate', value: 'INTERMEDIATE', desc: '1 to 3 years of training' },
-    { label: 'Advanced', value: 'ADVANCED', desc: 'More than 3 years of training' },
+    { label: 'Advanced',     value: 'ADVANCED',     desc: 'More than 3 years of training' },
 ]
+
+const cardClass = "bg-bg-card border-half rounded-xl p-6"
+const optionBtnClass = "w-full bg-bg-input border-half rounded-lg px-4 py-3 text-text-primary font-semibold cursor-pointer text-left hover:border-half-purple transition-colors"
 
 export default function AiChatPage() {
     const navigate = useNavigate()
     const { user, setUser } = useAuth()
-    
+
     const [context, setContext] = useState(null)
     const [step, setStep] = useState('loading')
     const [selectedSplit, setSelectedSplit] = useState(null)
@@ -31,11 +34,7 @@ export default function AiChatPage() {
         getAiContext(user?.id)
             .then(data => {
                 setContext(data)
-                if (data.fitnessLevel) {
-                    setStep('split')
-                } else {
-                    setStep('split')
-                }
+                setStep('split')
             })
             .catch(() => setStep('error'))
     }, [])
@@ -87,38 +86,31 @@ export default function AiChatPage() {
     }
 
     return (
-        <div style={{ maxWidth: 600, margin: '0 auto', padding: '2rem 0' }}>
+        <div className="max-w-xl mx-auto py-8">
 
             {/* Header */}
-            <div style={{ marginBottom: '2rem' }}>
-                <h1 style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>AI Workout Creator</h1>
-                <div style={{ color: 'var(--text-muted)' }}>Let your personal trainer create a workout based on your history</div>
+            <div className="mb-8">
+                <h1 className="text-xl font-bold text-text-primary mb-1">AI Workout Creator</h1>
+                <div className="text-text-muted text-sm">
+                    Let your personal trainer create a workout based on your history
+                </div>
             </div>
 
+            {/* Step — split */}
             {step === 'split' && (
-                <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 12, padding: '1.5rem' }}>
-                    <div style={{ color: 'var(--text-primary)', fontWeight: 600, marginBottom: '0.5rem' }}>
+                <div className={cardClass}>
+                    <div className="font-semibold text-text-primary mb-1.5">
                         What kind of workout do you want today?
                     </div>
-                    <div style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+                    <div className="text-text-muted text-sm mb-6">
                         Select a split and your AI trainer will build a personalised session for you.
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div className="flex flex-col gap-2.5">
                         {SPLITS.map(split => (
-                            <button key={split.value} onClick={() => handleSplitSelect(split)}
-                                style={{
-                                    background: 'var(--bg-input)',
-                                    border: '0.5px solid var(--border)',
-                                    borderRadius: 8,
-                                    padding: '12px 16px',
-                                    color: 'var(--text-primary)',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    textAlign: 'left',
-                                    transition: 'border-color 0.15s'
-                                }}
-                                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--purple)'}
-                                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                            <button
+                                key={split.value}
+                                onClick={() => handleSplitSelect(split)}
+                                className={optionBtnClass}
                             >
                                 {split.label}
                             </button>
@@ -127,86 +119,88 @@ export default function AiChatPage() {
                 </div>
             )}
 
+            {/* Step — level */}
             {step === 'level' && (
-                <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 12, padding: '1.5rem' }}>
-                    <div style={{ color: 'var(--text-primary)', fontWeight: 600, marginBottom: '0.5rem' }}>
+                <div className={cardClass}>
+                    <div className="font-semibold text-text-primary mb-1.5">
                         What is your training experience?
                     </div>
-                    <div style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+                    <div className="text-text-muted text-sm mb-6">
                         This helps your AI trainer set the right weights. You only need to do this once.
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div className="flex flex-col gap-2.5">
                         {LEVELS.map(level => (
-                            <button key={level.value} onClick={() => handleLevelSelect(level)}
-                                style={{
-                                    background: 'var(--bg-input)',
-                                    border: '0.5px solid var(--border)',
-                                    borderRadius: 8,
-                                    padding: '14px 16px',
-                                    color: 'var(--text-primary)',
-                                    cursor: 'pointer',
-                                    textAlign: 'left',
-                                    transition: 'border-color 0.15s'
-                                }}
-                                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--purple)'}
-                                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                            <button
+                                key={level.value}
+                                onClick={() => handleLevelSelect(level)}
+                                className={optionBtnClass}
                             >
-                                <div style={{ fontWeight: 600 }}>{level.label}</div>
-                                <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>{level.desc}</div>
+                                <div>{level.label}</div>
+                                <div className="text-text-muted font-normal text-sm mt-0.5">{level.desc}</div>
                             </button>
                         ))}
                     </div>
                 </div>
             )}
 
+            {/* Step — generating */}
             {step === 'generating' && (
-                <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 12, padding: '2.5rem', textAlign: 'center' }}>
-                    <div style={{ fontSize: 32, marginBottom: '1rem' }}>🏋️</div>
-                    <div style={{ color: 'var(--text-primary)', fontWeight: 600, marginBottom: 8 }}>
+                <div className={`${cardClass} text-center py-10`}>
+                    <div className="text-4xl mb-4">🏋️</div>
+                    <div className="font-semibold text-text-primary mb-2">
                         Building your {selectedSplit?.label}...
                     </div>
-                    <div style={{ color: 'var(--text-muted)' }}>
+                    <div className="text-text-muted text-sm">
                         Your AI trainer is reviewing your history and selecting the best exercises for you.
                     </div>
                 </div>
             )}
 
+            {/* Step — result */}
             {step === 'result' && result && (
-                <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 12, padding: '1.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '1rem' }}>
-                        <div style={{ fontSize: 24 }}>✅</div>
-                        <div>
-                            <div style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{result.message}</div>
+                <div className={cardClass}>
+                    <div className="flex items-center gap-2.5 mb-4">
+                        <div className="text-2xl">✅</div>
+                        <div className="font-bold text-text-primary">{result.message}</div>
+                    </div>
+
+                    <div className="bg-bg-input border-half rounded-lg px-3.5 py-3 mb-4">
+                        <div className="text-text-muted text-xs font-semibold uppercase tracking-wider mb-1.5">
+                            Trainer Notes
+                        </div>
+                        <div className="text-text-secondary text-sm leading-relaxed">
+                            {result.reasoning}
                         </div>
                     </div>
 
-                    <div style={{ background: 'var(--bg-input)', borderRadius: 8, padding: '12px 14px', marginBottom: '1rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                        <div style={{ color: 'var(--text-muted)', marginBottom: 4, fontWeight: 600 }}>TRAINER NOTES</div>
-                        {result.reasoning}
-                    </div>
-
-                    <div style={{ display: 'flex', gap: 10 }}>
-                        <button onClick={() => navigate(`/workouts/${result.workoutId}`)}
-                            style={{ flex: 1, background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 8, padding: '10px 16px', fontWeight: 600, cursor: 'pointer' }}>
+                    <div className="flex gap-2.5">
+                        <button
+                            onClick={() => navigate(`/workouts/${result.workoutId}`)}
+                            className="flex-1 bg-purple text-white border-none rounded-lg py-2.5 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+                        >
                             View Workout
                         </button>
-                        <button onClick={handleReset}
-                            style={{ flex: 1, background: 'transparent', color: 'var(--text-muted)', border: '0.5px solid var(--border)', borderRadius: 8, padding: '10px 16px', cursor: 'pointer' }}>
+                        <button
+                            onClick={handleReset}
+                            className="flex-1 bg-transparent text-text-muted border-half rounded-lg py-2.5 text-sm cursor-pointer hover:text-text-primary hover:border-half-purple transition-colors"
+                        >
                             Generate Another
                         </button>
                     </div>
                 </div>
             )}
 
-
+            {/* Step — error */}
             {step === 'error' && (
-                <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 12, padding: '1.5rem', textAlign: 'center' }}>
-                    <div style={{ fontSize: 32, marginBottom: '1rem' }}>⚠️</div>
-                    <div style={{ color: 'var(--text-primary)', fontWeight: 600, marginBottom: 8 }}>
+                <div className={`${cardClass} text-center`}>
+                    <div className="text-4xl mb-4">⚠️</div>
+                    <div className="font-semibold text-text-primary mb-2">
                         {errorMsg || 'Something went wrong'}
                     </div>
-                    <button onClick={handleReset}
-                        style={{ background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 8, padding: '10px 20px', fontWeight: 600, cursor: 'pointer', marginTop: '1rem' }}>
+                    <button
+                        onClick={handleReset}
+                        className="bg-purple text-white border-none rounded-lg px-5 py-2.5 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity mt-4"
+                    >
                         Try Again
                     </button>
                 </div>

@@ -1,23 +1,19 @@
 export default function FilterPills({ options, active, onChange }) {
-    return (
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: '1rem' }}>
-        {options.map(option => (
-          <button
-            key={option}
-            onClick={() => onChange(option)}
-            style={{
-              padding: '5px 14px',
-              borderRadius: 20,
-              border: '0.5px solid var(--border)',
-              cursor: 'pointer',
-              background: active === option ? 'var(--purple)' : 'transparent',
-              color: active === option ? 'white' : 'var(--text-secondary)',
-              fontWeight: active === option ? 600 : 400,
-            }}
-          >
-            {option}
-          </button>
-        ))}
+  return (
+      <div className="flex gap-1.5 flex-wrap mb-4">
+          {options.map(option => (
+              <button
+                  key={option}
+                  onClick={() => onChange(option)}
+                  className={`px-3.5 py-1 rounded-full text-sm border-none cursor-pointer transition-colors
+                      ${active === option
+                          ? 'bg-purple text-white font-semibold'
+                          : 'bg-transparent text-text-secondary border-half hover:text-text-primary'
+                      }`}
+              >
+                  {option}
+              </button>
+          ))}
       </div>
-    )
-  }
+  )
+}

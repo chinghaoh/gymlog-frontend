@@ -1,45 +1,72 @@
 export default function WorkoutSetList({ sets, editingSetId, editSetWeight, editSetReps, setEditSetWeight, setEditSetReps, setEditingSetId, onUpdateSet, onDeleteSet }) {
-    if (sets.length === 0) {
-      return <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>No sets logged yet</div>
-    }
-  
-    return sets.map((set, index) => (
-      <div key={set.id} style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 0', borderBottom: '0.5px solid var(--border-light)'
-      }}>
-        <div>
-          <div style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{set.exerciseName}</div>
-          <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>Set {index + 1}</div>
-        </div>
-  
-        {editingSetId === set.id ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input type="number" value={editSetWeight} onChange={e => setEditSetWeight(e.target.value)}
-              className="input-field"
-              style={{ width: 70, background: 'var(--bg-input)', color: 'var(--text-primary)', borderRadius: 6, padding: '4px 8px', outline: 'none' }}
-              placeholder="kg" />
-            <input type="number" value={editSetReps} onChange={e => setEditSetReps(e.target.value)}
-              className="input-field"
-              style={{ width: 60, background: 'var(--bg-input)', color: 'var(--text-primary)', borderRadius: 6, padding: '4px 8px', outline: 'none' }}
-              placeholder="reps" />
-            <button onClick={() => onUpdateSet(set)}
-              style={{ background: 'var(--purple)', color: 'white', border: 'none', borderRadius: 6, padding: '4px 10px', cursor: 'pointer' }}>✓</button>
-            <button onClick={() => setEditingSetId(null)}
-              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+  if (sets.length === 0) {
+      return (
+          <div className="text-text-muted text-center py-8">
+              No sets logged yet
           </div>
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ color: 'var(--teal)', fontWeight: 600 }}>{set.weight}kg × {set.reps}</div>
-            <button onClick={() => {
-              setEditingSetId(set.id)
-              setEditSetReps(set.reps)
-              setEditSetWeight(set.weight)
-            }} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✏</button>
-            <button onClick={() => onDeleteSet(set.id)}
-              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
-          </div>
-        )}
-      </div>
-    ))
+      )
   }
+
+  return sets.map((set, index) => (
+      <div
+          key={set.id}
+          className="flex items-center justify-between py-2 border-b border-border-light"
+      >
+          <div>
+              <div className="text-text-primary font-medium text-sm">{set.exerciseName}</div>
+              <div className="text-text-muted text-xs mt-0.5">Set {index + 1}</div>
+          </div>
+
+          {editingSetId === set.id ? (
+              <div className="flex items-center gap-1.5">
+                  <input
+                      type="number"
+                      value={editSetWeight}
+                      onChange={e => setEditSetWeight(e.target.value)}
+                      placeholder="kg"
+                      className="w-16 bg-bg-input border-half rounded-md px-2 py-1 text-sm text-text-primary outline-none"
+                  />
+                  <input
+                      type="number"
+                      value={editSetReps}
+                      onChange={e => setEditSetReps(e.target.value)}
+                      placeholder="reps"
+                      className="w-14 bg-bg-input border-half rounded-md px-2 py-1 text-sm text-text-primary outline-none"
+                  />
+                  <button
+                      onClick={() => onUpdateSet(set)}
+                      className="bg-purple text-white border-none rounded-md px-2.5 py-1 text-sm cursor-pointer hover:opacity-90"
+                  >
+                      ✓
+                  </button>
+                  <button
+                      onClick={() => setEditingSetId(null)}
+                      className="bg-transparent border-none text-text-muted cursor-pointer hover:text-text-primary"
+                  >
+                      ✕
+                  </button>
+              </div>
+          ) : (
+              <div className="flex items-center gap-3">
+                  <div className="text-teal font-semibold text-sm">{set.weight}kg × {set.reps}</div>
+                  <button
+                      onClick={() => {
+                          setEditingSetId(set.id)
+                          setEditSetReps(set.reps)
+                          setEditSetWeight(set.weight)
+                      }}
+                      className="bg-transparent border-none text-text-muted cursor-pointer hover:text-text-primary transition-colors"
+                  >
+                      ✏
+                  </button>
+                  <button
+                      onClick={() => onDeleteSet(set.id)}
+                      className="bg-transparent border-none text-text-muted cursor-pointer hover:text-red transition-colors"
+                  >
+                      ✕
+                  </button>
+              </div>
+          )}
+      </div>
+  ))
+}

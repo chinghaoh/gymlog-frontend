@@ -1,1 +1,50 @@
 @import "tailwindcss";
+
+@theme {
+    --color-bg-page:        #0f0f13;
+    --color-bg-card:        #1a1a24;
+    --color-bg-input:       #0f0f13;
+    --color-border:         #2a2a38;
+    --color-border-light:   #1f1f2a;
+    --color-text-primary:   #e8e8f0;
+    --color-text-secondary: #9090a8;
+    --color-text-muted:     #6b6b80;
+    --color-purple:         #534AB7;
+    --color-purple-light:   #7B73E0;
+    --color-purple-bg:      #1f1f30;
+    --color-teal:           #1D9E75;
+    --color-teal-bg:        #0d2020;
+    --color-amber:          #EF9F27;
+    --color-amber-bg:       #2a1f0d;
+    --color-blue:           #378ADD;
+    --color-blue-bg:        #0d1a2a;
+    --color-red:            #E24B4A;
+    --color-red-bg:         #2a0d0d;
+    --color-cyan:           #00BCD4;
+    --color-cyan-bg:        #0d2226;
+}
+
+@layer utilities {
+    .border-half {
+        border: 0.5px solid var(--color-border);
+    }
+    .border-half-purple {
+        border: 0.5px solid var(--color-purple);
+    }
+    .border-half-red {
+        border: 0.5px solid var(--color-red);
+    }
+    .border-half-teal {
+        border: 0.5px solid var(--color-teal);
+    }
+    .border-half-cyan {
+        border: 0.5px solid var(--color-cyan);
+    }
+}
+
+@layer base {
+    body {
+        background-color: var(--color-bg-page);
+        color: var(--color-text-primary);
+    }
+}

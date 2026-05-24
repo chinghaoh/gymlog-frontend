@@ -4,26 +4,40 @@ import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
 
+const inputClass = "w-full bg-bg-input border-half rounded-md px-2 py-1.5 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
+
 export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess }) {
+    const { user } = useAuth()
+    const navigate = useNavigate()
+
     const [workouts, setWorkouts] = useState([])
     const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
     const [sets, setSets] = useState([{ weight: 0, reps: 0 }])
     const [fetchingWorkouts, setFetchingWorkouts] = useState(true)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
-    const navigate = useNavigate()
 
-    const { user } = useAuth()
+    useEffect(() => {
+        if (!user) return
+        const fetchWorkouts = async () => {
+            try {
+                const data = await apiClient(`/api/workouts?userId=${user.id}`)
+                setWorkouts(data)
+                if (data.length > 0) setSelectedWorkoutId(data[0].id)
+            } catch {
+                setError('Could not load workouts.')
+            } finally {
+                setFetchingWorkouts(false)
+            }
+        }
+        fetchWorkouts()
+    }, [user])
 
     const updateSet = (index, field, value) => {
-        setSets(prev => prev.map((s, i) =>
-            i === index ? { ...s, [field]: value } : s
-        ))
+        setSets(prev => prev.map((s, i) => i === index ? { ...s, [field]: value } : s))
     }
 
-    const addSet = () => {
-        setSets(prev => [...prev, { weight: 0, reps: 0 }])
-    }
+    const addSet = () => setSets(prev => [...prev, { weight: 0, reps: 0 }])
 
     const removeSet = (index) => {
         if (sets.length === 1) return
@@ -31,14 +45,9 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
     }
 
     const handleConfirm = async () => {
-        if (!selectedWorkoutId) {
-            setError('Please select a workout.')
-            return
-        }
-
+        if (!selectedWorkoutId) { setError('Please select a workout.'); return }
         setLoading(true)
         setError(null)
-
         try {
             await apiClient(`/api/sets/bulk?workoutId=${selectedWorkoutId}&exerciseId=${exercise.id}`, {
                 method: 'POST',
@@ -59,280 +68,144 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
         }
     }
 
-    useEffect(() => {
-        if (!user) return
-
-        const fetchWorkouts = async () => {
-            try {
-                const data = await apiClient(`/api/workouts?userId=${user.id}`)
-                setWorkouts(data)
-                if (data.length > 0) setSelectedWorkoutId(data[0].id)
-            } catch (err) {
-                setError('Could not load workouts.')
-            } finally {
-                setFetchingWorkouts(false)
-            }
-        }
-
-        fetchWorkouts()
-    }, [user])
-
     return (
         <div
-            style={{
-                position: 'fixed',
-                inset: 0,
-                background: 'rgba(0,0,0,0.6)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 1000,
-            }}
-            onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+            onClick={e => { if (e.target === e.currentTarget) onClose() }}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
         >
-            {/* Top headers*/}
-            <div style={{
-                background: '#1a1a24',
-                border: '0.5px solid #2a2a38',
-                borderRadius: 12,
-                width: 440,
-                maxWidth: '95vw',
-                display: 'flex',
-                flexDirection: 'column',
-                maxHeight: '90vh',
-                overflow: 'hidden',
-            }}>
-                <div style={{
-                    padding: '16px 18px 14px',
-                    borderBottom: '0.5px solid #2a2a38',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    justifyContent: 'space-between',
-                    flexShrink: 0,
-                }}>
+            <div className="bg-bg-card border-half rounded-xl w-full max-w-[440px] flex flex-col max-h-[90vh] overflow-hidden">
+
+                {/* Header */}
+                <div className="flex items-start justify-between px-4.5 py-4 border-b border-half flex-shrink-0">
                     <div>
-                        <div style={{ fontWeight: 600, color: '#e8e8f0' }}>
-                            Add exercise to workout
-                        </div>
-                        <div style={{ color: '#6b6b80', marginTop: 2 }}>
-                            Choose a workout and log your sets
-                        </div>
+                        <div className="font-semibold text-text-primary">Add exercise to workout</div>
+                        <div className="text-text-muted text-sm mt-0.5">Choose a workout and log your sets</div>
                     </div>
-                    <button onClick={onClose} style={{
-                        background: '#0f0f13',
-                        border: '0.5px solid #2a2a38',
-                        borderRadius: 5,
-                        width: 24,
-                        height: 24,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#9090a8',
-                        cursor: 'pointer',
-                    }}>×</button>
+                    <button
+                        onClick={onClose}
+                        className="bg-bg-input border-half rounded-md w-6 h-6 flex items-center justify-center text-text-secondary cursor-pointer hover:text-text-primary transition-colors text-sm"
+                    >
+                        ×
+                    </button>
                 </div>
 
-                {/* Exercise name */}
-                <div style={{
-                    padding: '10px 18px',
-                    background: '#141418',
-                    borderBottom: '0.5px solid #2a2a38',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    flexShrink: 0,
-                }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 600, color: '#e8e8f0' }}>
-                            {exercise?.name}
-                        </div>
-                        <div style={{ color: '#6b6b80' }}>
-                            {exercise?.category} · {exercise?.targetMuscle} · {exercise?.equipment}
-                        </div>
+                {/* Exercise name strip */}
+                <div className="px-4.5 py-2.5 bg-bg-page border-b border-half flex-shrink-0">
+                    <div className="font-semibold text-text-primary text-sm">{exercise?.name}</div>
+                    <div className="text-text-muted text-xs mt-0.5">
+                        {exercise?.category} · {exercise?.targetMuscle} · {exercise?.equipment}
                     </div>
                 </div>
 
-                {/* Workout dropdown */}
-                <div style={{
-                    padding: '14px 18px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 14,
-                    overflowY: 'auto',
-                    flex: 1,
-                }}>
+                {/* Body */}
+                <div className="px-4.5 py-3.5 flex flex-col gap-3.5 overflow-y-auto flex-1">
+
+                    {/* Workout select */}
                     <div>
-                        <div style={{ fontWeight: 600, color: '#6b6b80', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                        <div className="text-text-muted text-xs uppercase tracking-wider font-semibold mb-1.5">
                             Select workout
                         </div>
                         {fetchingWorkouts ? (
-                            <div style={{ color: '#6b6b80' }}>Loading workouts...</div>
+                            <div className="text-text-muted text-sm">Loading workouts...</div>
                         ) : workouts.length === 0 ? (
-                            <div style={{ color: '#6b6b80' }}>No workouts found. Create one first.</div>
+                            <div className="text-text-muted text-sm">No workouts found. Create one first.</div>
                         ) : (
                             <select
                                 value={selectedWorkoutId}
                                 onChange={e => setSelectedWorkoutId(Number(e.target.value))}
-                                style={{
-                                    width: '100%',
-                                    background: '#0f0f13',
-                                    border: '0.5px solid #2a2a38',
-                                    borderRadius: 7,
-                                    padding: '9px 12px',
-                                    color: '#e8e8f0',
-                                    outline: 'none',
-                                }}
+                                className="w-full bg-bg-input border-half rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
                             >
                                 {workouts.map(w => (
-                                    <option key={w.id} value={w.id}>
-                                        {w.name} · {w.splitCategory}
-                                    </option>
+                                    <option key={w.id} value={w.id}>{w.name} · {w.splitCategory}</option>
                                 ))}
                             </select>
                         )}
                     </div>
 
+                    {/* Sets */}
                     <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                            <span style={{ fontWeight: 600, color: '#6b6b80', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Sets</span>
-                            <div style={{ flex: 1, height: '0.5px', background: '#2a2a38' }} />
-                            <span style={{ color: '#534AB7', fontWeight: 600 }}>{sets.length} {sets.length === 1 ? 'set' : 'sets'}</span>
+                        <div className="flex items-center gap-2 mb-2.5">
+                            <span className="text-text-muted text-xs uppercase tracking-wider font-semibold">Sets</span>
+                            <div className="flex-1 h-px bg-border" />
+                            <span className="text-purple text-sm font-semibold">
+                                {sets.length} {sets.length === 1 ? 'set' : 'sets'}
+                            </span>
                         </div>
 
-                        {/* Workout set headers */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 1fr 28px', gap: 6, marginBottom: 6 }}>
+                        {/* Column headers */}
+                        <div className="grid grid-cols-[28px_1fr_1fr_28px] gap-1.5 mb-1.5">
                             <div />
-                            <div style={{ color: '#6b6b80', textTransform: 'uppercase', letterSpacing: '0.04em', paddingLeft: 8 }}>Weight (kg)</div>
-                            <div style={{ color: '#6b6b80', textTransform: 'uppercase', letterSpacing: '0.04em', paddingLeft: 8 }}>Reps</div>
+                            <div className="text-text-muted text-xs uppercase tracking-wider pl-2">Weight (kg)</div>
+                            <div className="text-text-muted text-xs uppercase tracking-wider pl-2">Reps</div>
                             <div />
                         </div>
 
-                        {/* Sets */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {/* Set rows */}
+                        <div className="flex flex-col gap-1.5">
                             {sets.map((set, i) => (
-                                <div key={i} style={{ display: 'grid', gridTemplateColumns: '28px 1fr 1fr 28px', gap: 6, alignItems: 'center' }}>
-                                    <div style={{
-                                        width: 22, height: 22,
-                                        background: '#1f1f30',
-                                        borderRadius: 5,
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontWeight: 600, color: '#7B73E0',
-                                    }}>{i + 1}</div>
+                                <div key={i} className="grid grid-cols-[28px_1fr_1fr_28px] gap-1.5 items-center">
+                                    <div className="w-5.5 h-5.5 bg-purple-bg rounded flex items-center justify-center font-semibold text-purple-light text-xs">
+                                        {i + 1}
+                                    </div>
                                     <input
                                         type="number"
                                         min="0"
                                         value={set.weight}
                                         onChange={e => updateSet(i, 'weight', e.target.value)}
-                                        style={{
-                                            background: '#0f0f13',
-                                            border: '0.5px solid #2a2a38',
-                                            borderRadius: 6,
-                                            padding: '7px 8px',
-                                            color: '#e8e8f0',
-                                            outline: 'none',
-                                            width: '100%',
-                                        }}
+                                        className={inputClass}
                                     />
                                     <input
                                         type="number"
                                         min="0"
                                         value={set.reps}
                                         onChange={e => updateSet(i, 'reps', e.target.value)}
-                                        style={{
-                                            background: '#0f0f13',
-                                            border: '0.5px solid #2a2a38',
-                                            borderRadius: 6,
-                                            padding: '7px 8px',
-                                            color: '#e8e8f0',
-                                            outline: 'none',
-                                            width: '100%',
-                                        }}
+                                        className={inputClass}
                                     />
                                     <button
                                         onClick={() => removeSet(i)}
                                         disabled={sets.length === 1}
-                                        style={{
-                                            background: 'transparent',
-                                            border: 'none',
-                                            color: sets.length === 1 ? '#2a2a38' : '#E24B4A',
-                                            cursor: sets.length === 1 ? 'default' : 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
-                                    >X</button>
+                                        className={`bg-transparent border-none flex items-center justify-center text-sm
+                                            ${sets.length === 1 ? 'text-border cursor-not-allowed' : 'text-red cursor-pointer hover:opacity-70'}`}
+                                    >
+                                        ×
+                                    </button>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Add set button */}
+                        {/* Add set */}
                         <div
                             onClick={addSet}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                marginTop: 8,
-                                cursor: 'pointer',
-                            }}
+                            className="flex items-center gap-1.5 mt-2 cursor-pointer"
                         >
-                            <div style={{
-                                width: 22, height: 22,
-                                borderRadius: 5,
-                                background: '#141418',
-                                border: '0.5px dashed #2a2a38',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                color: '#534AB7',
-                            }}>+</div>
-                            <span style={{ color: '#534AB7', fontWeight: 500 }}>Add another set</span>
+                            <div className="w-5.5 h-5.5 rounded bg-bg-page border border-dashed border-border flex items-center justify-center text-purple text-sm">
+                                +
+                            </div>
+                            <span className="text-purple text-sm font-medium">Add another set</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div style={{
-                    padding: '12px 18px',
-                    borderTop: '0.5px solid #2a2a38',
-                    display: 'flex',
-                    gap: 8,
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    flexShrink: 0,
-                }}>
-                    {error && (
-                        <span style={{ color: '#E24B4A', flex: 1 }}>{error}</span>
-                    )}
-                    <button onClick={onClose} style={{
-                        background: '#0f0f13',
-                        border: '0.5px solid #2a2a38',
-                        borderRadius: 6,
-                        padding: '7px 14px',
-                        color: '#9090a8',
-                        cursor: 'pointer',
-                    }}>Cancel</button>
+                <div className="flex items-center justify-end gap-2 px-4.5 py-3 border-t border-half flex-shrink-0">
+                    {error && <span className="text-red text-sm flex-1">{error}</span>}
+                    <button
+                        onClick={onClose}
+                        className="bg-bg-input border-half rounded-md px-3.5 py-1.5 text-sm text-text-secondary cursor-pointer hover:text-text-primary transition-colors"
+                    >
+                        Cancel
+                    </button>
                     <button
                         onClick={handleConfirm}
                         disabled={loading}
-                        style={{
-                            background: loading ? '#2a2a38' : '#534AB7',
-                            border: 'none',
-                            borderRadius: 6,
-                            padding: '7px 16px',
-                            fontWeight: 600,
-                            color: 'white',
-                            cursor: loading ? 'default' : 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                        }}
+                        className={`flex items-center gap-1.5 border-none rounded-md px-4 py-1.5 text-sm font-semibold transition-opacity
+                            ${loading ? 'bg-border text-text-muted cursor-not-allowed' : 'bg-purple text-white cursor-pointer hover:opacity-90'}`}
                     >
-                        {loading ? 'Adding...' : `Add to workout`}
+                        {loading ? 'Adding...' : 'Add to workout'}
                         {!loading && (
-                            <span style={{
-                                background: 'rgba(255,255,255,0.2)',
-                                borderRadius: 3,
-                                padding: '1px 5px',
-                            }}>{sets.length} {sets.length === 1 ? 'set' : 'sets'}</span>
+                            <span className="bg-white/20 rounded px-1.5 py-0.5 text-xs">
+                                {sets.length} {sets.length === 1 ? 'set' : 'sets'}
+                            </span>
                         )}
                     </button>
                 </div>

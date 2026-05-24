@@ -4,87 +4,84 @@ import { useAuth } from "../context/AuthContext"
 import { apiClient } from "../../lib/apiClient"
 
 export default function Sidebar() {
-
   const navigate = useNavigate()
   const { user, setUser } = useAuth()
 
   const handleLogout = async () => {
-    try {
-      await apiClient('/api/auth/logout', { method: 'POST' })
-    } catch (err) {
-    } finally {
-      setUser(null)
-      navigate('/login')
-    }
+      try {
+          await apiClient('/api/auth/logout', { method: 'POST' })
+      } catch (err) {
+      } finally {
+          setUser(null)
+          navigate('/login')
+      }
   }
 
   const navItems = [
-    { to: '/dashboard', label: 'Dashboard', color: 'var(--purple)' },
-    { to: '/workouts', label: 'Workouts', color: 'var(--teal)' },
-    { to: '/logs', label: 'Logs', color: 'var(--purple-light)'  },
-    { to: '/exercises', label: 'Exercises', color: 'var(--amber)' },
-    { to: '/records', label: 'Records', color: 'var(--blue)' },
-    { to: '/ai', label: 'AI Trainer', color:'var(--cyan)'}
+      { to: '/dashboard', label: 'Dashboard', color: 'bg-purple' },
+      { to: '/workouts',  label: 'Workouts',  color: 'bg-teal' },
+      { to: '/logs',      label: 'Logs',       color: 'bg-purple-light' },
+      { to: '/exercises', label: 'Exercises',  color: 'bg-amber' },
+      { to: '/records',   label: 'Records',    color: 'bg-blue' },
+      { to: '/ai',        label: 'AI Trainer', color: 'bg-cyan' },
   ]
 
+  const initials = user?.name
+      ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+      : '?'
+
   return (
-    <div style={{
-      width: 180, background: 'var(--bg-card)', minHeight: '100vh',
-      padding: '20px 12px', display: 'flex', flexDirection: 'column'
-    }}>
+      <aside className="w-[180px] bg-bg-card min-h-screen px-3 py-5 flex flex-col flex-shrink-0 border-r border-half">
 
-      {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
-        <div style={{
-          width: 28, height: 28, background: 'var(--purple)',
-          borderRadius: 6, display: 'flex', alignItems: 'center',
-          justifyContent: 'center', color: 'white', fontWeight: 700
-        }}>G</div>
-        <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>GymLog</span>
-      </div>
-
-      {/* navigation tabs */}
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
-        {navItems.map(({ to, label, color }) => (
-          <NavLink key={to} to={to} style={({ isActive }) => ({
-            display: 'flex', alignItems: 'center', gap: 10,
-            padding: '8px 10px', borderRadius: 6, textDecoration: 'none',
-            color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
-            background: isActive ? 'var(--purple-bg)' : 'transparent',
-          })}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }} />
-            {label}
-          </NavLink>
-        ))}
-      </nav>
-
-      {/* profile */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <NavLink to="/profile" style={{ textDecoration: 'none' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '8px 10px', borderRadius: 6,
-            border: '0.5px solid var(--border)',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              width: 26, height: 26, borderRadius: '50%', background: 'var(--purple)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 12,
-              color: 'white', fontWeight: 600, flexShrink: 0
-            }}>CH</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ color: 'var(--text-primary)', fontWeight: 500, fontSize: 12 }}>{user?.name}</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{user?.role}</div>
-            </div>
-            <span
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleLogout() }}
-              style={{ color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0, fontSize: 12 }}
-            >Logout</span>
+          {/* Logo */}
+          <div className="flex items-center gap-2 mb-6 px-0.5">
+              <div className="w-7 h-7 bg-purple rounded-md flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  G
+              </div>
+              <span className="text-text-primary font-semibold text-sm">GymLog</span>
           </div>
-        </NavLink>
-      </div>
 
-    </div>
+          {/* Nav */}
+          <nav className="flex flex-col gap-0.5 flex-1">
+              {navItems.map(({ to, label, color }) => (
+                  <NavLink
+                      key={to}
+                      to={to}
+                      className={({ isActive }) =>
+                          `flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm no-underline transition-colors
+                          ${isActive
+                              ? 'text-text-primary bg-purple-bg'
+                              : 'text-text-muted hover:text-text-primary hover:bg-border-light'
+                          }`
+                      }
+                  >
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${color}`} />
+                      {label}
+                  </NavLink>
+              ))}
+          </nav>
+
+          {/* Profile */}
+          <div className="mt-2">
+              <NavLink to="/profile" className="no-underline">
+                  <div className="flex items-center gap-2 px-2.5 py-2 rounded-md border-half overflow-hidden hover:border-half-purple transition-colors">
+                      <div className="w-6 h-6 rounded-full bg-purple flex items-center justify-center text-xs text-white font-semibold flex-shrink-0">
+                          {initials}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                          <div className="text-text-primary font-medium text-xs truncate">{user?.name}</div>
+                          <div className="text-text-muted text-xs">{user?.role}</div>
+                      </div>
+                      <span
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleLogout() }}
+                          className="text-text-muted text-xs flex-shrink-0 cursor-pointer hover:text-red transition-colors"
+                      >
+                          Logout
+                      </span>
+                  </div>
+              </NavLink>
+          </div>
+
+      </aside>
   )
 }

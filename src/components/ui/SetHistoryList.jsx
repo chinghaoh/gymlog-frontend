@@ -1,42 +1,43 @@
 export default function SetHistoryList({ sets, prWeight }) {
   const formatDate = (dateStr) => {
-    if (!dateStr) return ''
-    const [year, month, day] = dateStr.split('-')
-    return `${day}/${month}/${year.slice(2)}`
+      if (!dateStr) return ''
+      const [year, month, day] = dateStr.split('-')
+      return `${day}/${month}/${year.slice(2)}`
   }
 
   const prIndex = sets.findIndex(s => Number(s.weight) === Number(prWeight))
 
   return (
-    <div style={{ background: 'var(--bg-input)', border: '0.5px solid var(--border)', borderRadius: 8, padding: 12 }}>
-      <div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-        Set history
+      <div className="bg-bg-input border-half rounded-lg p-3">
+          <div className="text-text-muted text-xs uppercase tracking-wider mb-2.5">
+              Set history
+          </div>
+          <div className="max-h-48 overflow-y-auto pr-2">
+              {sets.map((set, i) => {
+                  const isPR = i === prIndex
+                  return (
+                      <div
+                          key={i}
+                          className={`flex items-center justify-between py-1.5
+                              ${i !== sets.length - 1 ? 'border-b border-border-light' : ''}`}
+                      >
+                          <div className="text-text-muted text-sm">
+                              {formatDate(set.logDate)}
+                          </div>
+                          <div className="flex items-center gap-2">
+                              <div className="font-medium text-text-primary text-sm">
+                                  {set.weight}kg × {set.reps}
+                              </div>
+                              {isPR && (
+                                  <span className="bg-teal-bg text-teal text-xs font-semibold px-1.5 py-0.5 rounded">
+                                      PR
+                                  </span>
+                              )}
+                          </div>
+                      </div>
+                  )
+              })}
+          </div>
       </div>
-      <div style={{ maxHeight: 200, overflowY: 'auto', paddingRight: 8 }}>
-        {sets.map((set, i) => {
-          const isPR = i === prIndex
-          return (
-            <div key={i} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '7px 0', borderBottom: i === sets.length - 1 ? 'none' : '0.5px solid var(--border-light)',
-            }}>
-              <div style={{ color: 'var(--text-muted)' }}>
-                {formatDate(set.logDate)}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
-                  {set.weight}kg × {set.reps}
-                </div>
-                {isPR && (
-                  <span style={{ background: 'var(--teal-bg)', color: 'var(--teal)', padding: '1px 6px', borderRadius: 3, fontWeight: 600 }}>
-                    PR
-                  </span>
-                )}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
   )
 }

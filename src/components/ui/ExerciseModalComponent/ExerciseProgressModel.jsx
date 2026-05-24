@@ -11,7 +11,6 @@ export default function ExerciseProgressModal({ record, onClose }) {
 
     useEffect(() => {
         if (!user || !record) return
-
         const fetchSets = async () => {
             try {
                 const data = await apiClient(`/api/sets/by-exercise?userId=${user.id}&exerciseId=${record.exerciseId}`)
@@ -22,86 +21,63 @@ export default function ExerciseProgressModal({ record, onClose }) {
                 setLoading(false)
             }
         }
-
         fetchSets()
     }, [user, record])
 
-    const sortedSets = [...sets].sort((a, b) => Number(b.weight) - Number(a.weight))
-
-
     return (
         <div
-            style={{
-                position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-            }}
-            onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+            onClick={e => { if (e.target === e.currentTarget) onClose() }}
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
         >
-            <div style={{
-                background: 'var(--bg-card)', border: '0.5px solid var(--border)',
-                borderRadius: 12, width: 500, maxWidth: '95vw',
-                display: 'flex', flexDirection: 'column', maxHeight: '90vh', overflow: 'hidden',
-            }}>
+            <div className="bg-bg-card border-half rounded-xl w-full max-w-lg flex flex-col max-h-[90vh] overflow-hidden">
 
                 {/* Header */}
-                <div style={{
-                    padding: '16px 18px 14px', borderBottom: '0.5px solid var(--border)',
-                    display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexShrink: 0,
-                }}>
+                <div className="flex items-start justify-between px-4.5 py-4 border-b border-half flex-shrink-0">
                     <div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
-                            {record.exerciseName}
-                        </div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+                        <div className="font-semibold text-text-primary text-sm">{record.exerciseName}</div>
+                        <div className="text-text-muted text-xs mt-0.5">
                             {record.category} · Current PR: {record.weight}kg × {record.reps}
                         </div>
                     </div>
-                    <button onClick={onClose} style={{
-                        background: 'var(--bg-input)', border: '0.5px solid var(--border)',
-                        borderRadius: 5, width: 24, height: 24, display: 'flex',
-                        alignItems: 'center', justifyContent: 'center',
-                        color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16,
-                    }}>×</button>
+                    <button
+                        onClick={onClose}
+                        className="bg-bg-input border-half rounded-md w-6 h-6 flex items-center justify-center text-text-muted cursor-pointer hover:text-text-primary transition-colors"
+                    >
+                        ×
+                    </button>
                 </div>
 
-                {/* Scrollable body */}
-                <div style={{ padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto', flex: 1 }}>
+                {/* Body */}
+                <div className="px-4.5 py-3.5 flex flex-col gap-3.5 overflow-y-auto flex-1">
 
-                    {/* PR hero strip */}
-                    <div style={{
-                        background: 'var(--bg-input)', border: '0.5px solid var(--border)',
-                        borderRadius: 8, padding: 12, display: 'flex', gap: 16,
-                    }}>
-                        <div style={{ flex: 1, textAlign: 'center' }}>
-                            <div style={{ fontSize: 22, fontWeight: 600, color: 'var(--teal)' }}>{record.weight}kg</div>
-                            <div style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>Best weight</div>
-                        </div>
-                        <div style={{ width: '0.5px', background: 'var(--border)' }} />
-                        <div style={{ flex: 1, textAlign: 'center' }}>
-                            <div style={{ fontSize: 22, fontWeight: 600, color: 'var(--teal)' }}>{record.reps}</div>
-                            <div style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>Best reps</div>
-                        </div>
-                        <div style={{ width: '0.5px', background: 'var(--border)' }} />
-                        <div style={{ flex: 1, textAlign: 'center' }}>
-                            <div style={{ fontSize: 22, fontWeight: 600, color: 'var(--teal)' }}>{sets.length}</div>
-                            <div style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>Total sets</div>
-                        </div>
+                    {/* PR strip */}
+                    <div className="bg-bg-input border-half rounded-lg p-3 flex gap-4">
+                        {[
+                            { val: `${record.weight}kg`, lbl: 'Best weight' },
+                            { val: record.reps,          lbl: 'Best reps' },
+                            { val: sets.length,          lbl: 'Total sets' },
+                        ].map(({ val, lbl }, i, arr) => (
+                            <div key={lbl} className="flex-1 text-center flex items-center">
+                                <div className="flex-1">
+                                    <div className="text-2xl font-semibold text-teal">{val}</div>
+                                    <div className="text-text-muted text-xs uppercase tracking-wider mt-0.5">{lbl}</div>
+                                </div>
+                                {i < arr.length - 1 && <div className="w-px bg-border h-full" />}
+                            </div>
+                        ))}
                     </div>
 
-                    {/* Weight progression bar chart */}
+                    {/* Chart */}
                     {!loading && sets.length > 0 && (
                         <WeightProgressionChart sets={sets} prWeight={record.weight} />
                     )}
 
                     {/* Set history */}
                     <div>
-                        <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-                            Set history
-                        </div>
                         {loading ? (
-                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Loading...</div>
+                            <div className="text-text-muted text-xs">Loading...</div>
                         ) : sets.length === 0 ? (
-                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>No sets logged yet.</div>
+                            <div className="text-text-muted text-xs">No sets logged yet.</div>
                         ) : (
                             <SetHistoryList sets={sets} prWeight={record.weight} prReps={record.reps} />
                         )}

@@ -7,17 +7,15 @@ export default function EditSection() {
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
+    const [fitnessLevel, setFitnessLevel] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [success, setSuccess] = useState(false)
 
-    const [fitnessLevel, setFitnessLevel] = useState('')
-
-
     const LEVELS = [
-        { value: 'BEGINNER', label: 'Beginner', desc: 'Less than 1 year' },
+        { value: 'BEGINNER',     label: 'Beginner',     desc: 'Less than 1 year' },
         { value: 'INTERMEDIATE', label: 'Intermediate', desc: '1 to 3 years' },
-        { value: 'ADVANCED', label: 'Advanced', desc: 'More than 3 years' },
+        { value: 'ADVANCED',     label: 'Advanced',     desc: 'More than 3 years' },
     ]
 
     useEffect(() => {
@@ -29,8 +27,7 @@ export default function EditSection() {
     }, [user])
 
     const handleSave = async () => {
-        const confirmed = window.confirm('Are you sure you want to update your profile?')
-        if (!confirmed) return
+        if (!window.confirm('Are you sure you want to update your profile?')) return
 
         setLoading(true)
         setError(null)
@@ -59,78 +56,81 @@ export default function EditSection() {
     }
 
     return (
-        <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
-            <div style={{ fontWeight: 600, color: 'var(--text-primary)', paddingBottom: 10, borderBottom: '0.5px solid var(--border)', marginBottom: 12 }}>
+        <div className="bg-bg-card border-half rounded-xl px-4 py-3.5">
+            <div className="font-semibold text-text-primary pb-2.5 mb-3">
                 Edit profile
             </div>
 
-            <div style={{ marginBottom: 10 }}>
-                <label style={{ color: 'var(--text-muted)', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Name</label>
+            {/* Name */}
+            <div className="mb-2.5">
+                <label className="text-text-muted text-xs uppercase tracking-wider block mb-1.5">Name</label>
                 <input
-                    className="input-field"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    style={{ width: '100%', background: 'var(--bg-input)', borderRadius: 6, padding: '8px 10px', color: 'var(--text-primary)', outline: 'none' }}
+                    className="w-full bg-bg-input border-half rounded-md px-2.5 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
                 />
             </div>
 
-            <div style={{ marginBottom: 10 }}>
-                <label style={{ color: 'var(--text-muted)', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email</label>
+            {/* Email */}
+            <div className="mb-2.5">
+                <label className="text-text-muted text-xs uppercase tracking-wider block mb-1.5">Email</label>
                 <input
-                    className="input-field"
                     type="email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    style={{ width: '100%', background: 'var(--bg-input)', borderRadius: 6, padding: '8px 10px', color: 'var(--text-primary)', outline: 'none' }}
+                    className="w-full bg-bg-input border-half rounded-md px-2.5 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
                 />
             </div>
 
-            <div style={{ marginBottom: 10 }}>
-                <label style={{ color: 'var(--text-muted)', display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Fitness Level</label>
+            {/* Fitness level */}
+            <div className="mb-2.5">
+                <label className="text-text-muted text-xs uppercase tracking-wider block mb-1.5">Fitness Level</label>
                 {user?.fitnessLevel && (
-                    <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 8 }}>
-                        Current: <span style={{ color: 'var(--purple-light)', fontWeight: 600 }}>{user.fitnessLevel}</span>
+                    <div className="text-text-muted text-xs mb-2">
+                        Current: <span className="text-purple-light font-semibold">{user.fitnessLevel}</span>
                     </div>
                 )}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div className="flex flex-col gap-2">
                     {LEVELS.map(level => (
                         <div
                             key={level.value}
                             onClick={() => setFitnessLevel(level.value)}
-                            style={{
-                                padding: '10px 12px',
-                                borderRadius: 7,
-                                border: `0.5px solid ${fitnessLevel === level.value ? 'var(--purple)' : 'var(--border)'}`,
-                                background: fitnessLevel === level.value ? 'var(--purple-bg)' : 'var(--bg-input)',
-                                cursor: 'pointer'
-                            }}
+                            className={`px-3 py-2.5 rounded-lg cursor-pointer transition-colors
+                                ${fitnessLevel === level.value
+                                    ? 'border-half-purple bg-purple-bg'
+                                    : 'border-half bg-bg-input hover:border-half-purple'
+                                }`}
                         >
-                            <div style={{ fontWeight: 600, color: fitnessLevel === level.value ? 'var(--purple-light)' : 'var(--text-primary)' }}>{level.label}</div>
-                            <div style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 2 }}>{level.desc}</div>
+                            <div className={`font-semibold text-sm ${fitnessLevel === level.value ? 'text-purple-light' : 'text-text-primary'}`}>
+                                {level.label}
+                            </div>
+                            <div className="text-text-muted text-xs mt-0.5">{level.desc}</div>
                         </div>
                     ))}
                 </div>
             </div>
 
+            {error && <div className="text-red text-sm mb-2">{error}</div>}
+            {success && <div className="text-teal text-sm mb-2">Profile updated successfully.</div>}
 
-
-            {error && <div style={{ color: 'var(--red)', marginBottom: 8 }}>{error}</div>}
-            {success && <div style={{ color: 'var(--teal)', marginBottom: 8 }}>Profile updated successfully.</div>}
-
-            <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+            <div className="flex gap-2 mt-1">
                 <button
                     onClick={handleSave}
                     disabled={loading}
-                    style={{
-                        background: loading ? 'var(--border)' : 'var(--purple)',
-                        border: 'none', borderRadius: 6, padding: '7px 14px',
-                        fontWeight: 600, color: 'white', cursor: loading ? 'default' : 'pointer',
-                    }}
-                >{loading ? 'Saving...' : 'Save changes'}</button>
+                    className={`px-3.5 py-1.5 rounded-md text-sm font-semibold border-none transition-opacity
+                        ${loading
+                            ? 'bg-border text-text-muted cursor-not-allowed'
+                            : 'bg-purple text-white cursor-pointer hover:opacity-90'
+                        }`}
+                >
+                    {loading ? 'Saving...' : 'Save changes'}
+                </button>
                 <button
                     onClick={() => { setName(user.name); setEmail(user.email); setError(null); setSuccess(false) }}
-                    style={{ background: 'var(--bg-input)', border: '0.5px solid var(--border)', borderRadius: 6, padding: '7px 14px', color: 'var(--text-muted)', cursor: 'pointer' }}
-                >Cancel</button>
+                    className="px-3.5 py-1.5 rounded-md text-sm text-text-muted bg-bg-input border-half cursor-pointer hover:text-text-primary transition-colors"
+                >
+                    Cancel
+                </button>
             </div>
         </div>
     )
