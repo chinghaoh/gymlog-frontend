@@ -13,35 +13,38 @@ import ForgotPassword from './components/pages/ForgotPassword'
 import ResetPassword from './components/pages/ResetPassword'
 import AiChatPage from './components/pages/ai/AiChatPage'
 import LogsPage from './components/pages/LogsPage'
-
+import ProtectedRoute from './components/layout/ProtectedRoute'
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login/>} />
+        <Route path="/login" element={<Login />} />
         <Route path="/verify" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route path="/*" element={
-          <div style={{ display: 'flex' }}>
-            <Sidebar />
-            <div style={{ flex: 1, padding: 20, color: 'var(--text-primary)' }}>
-              <Routes>
-                <Route path="/dashboard" element={<Dashboard/>} />
-                <Route path="/workouts"  element={<Workouts/>} />
-                <Route path="/workouts/:id" element={<WorkoutDetail />} />
-                <Route path="/logs" element={<LogsPage/>} />
+          <ProtectedRoute>
+            <div style={{ display: 'flex' }}>
+              <Sidebar />
+              <div style={{ flex: 1, padding: 20, color: 'var(--text-primary)' }}>
+                <Routes>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/workouts" element={<Workouts />} />
+                  <Route path="/workouts/:id" element={<WorkoutDetail />} />
+                  <Route path="/logs" element={<LogsPage />} />
 
-                <Route path="/exercises" element={<Exercises/>} />
-                <Route path="/exercises/:id" element={<ExerciseDetail />} />
-                <Route path="/records"   element={<Records/>} />
-                <Route path="/profile"   element={<Profile/>} />
-                <Route path="/ai" element={<AiChatPage />} />
-                <Route index             element={<Navigate to="/dashboard" replace />} />
-              </Routes>
+                  <Route path="/exercises" element={<Exercises />} />
+                  <Route path="/exercises/:id" element={<ExerciseDetail />} />
+                  <Route path="/records" element={<Records />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/ai" element={<AiChatPage />} />
+                  <Route index element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+
+              </div>
             </div>
-          </div>
+          </ProtectedRoute>
         } />
       </Routes>
     </BrowserRouter>

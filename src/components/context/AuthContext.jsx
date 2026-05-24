@@ -5,14 +5,16 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   const loadUser = async () => {
     try {
       const data = await apiClient('/api/auth/me', { skipRedirect: true })
       setUser(data)
     } catch (err) {
-      console.error('loadUser failed:', err)
       setUser(null)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -21,7 +23,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loadUser }}>
+    <AuthContext.Provider value={{ user, setUser, loadUser, loading }}>
       {children}
     </AuthContext.Provider>
   )
