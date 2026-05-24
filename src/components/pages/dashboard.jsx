@@ -22,7 +22,7 @@ export default function Dashboard() {
             .then(data => setSummary(data))
             .catch(err => console.error(err))
 
-        apiClient(`/api/workouts?userId=${user.id}`)
+        apiClient(`/api/workoutlogs?userId=${user.id}`)
             .then(data => setRecentWorkouts(data.slice(0, 5)))
             .catch(err => console.error(err))
 
@@ -91,9 +91,9 @@ export default function Dashboard() {
                                 padding: '8px 0',
                                 borderBottom: index === recentWorkouts.length - 1 ? 'none' : '0.5px solid var(--border)'
                             }}>
-                                <div>
-                                    <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{workout.name}</div>
-                                    <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>{workout.date} · {workout.durationMinutes} min</div>
+                                <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{workout.workoutName}</div>
+                                <div style={{ color: 'var(--text-muted)', marginTop: 2 }}>
+                                    {workout.date} · {workout.durationMinutes ? `${workout.durationMinutes} min` : '—'}
                                 </div>
                                 <span style={{
                                     fontWeight: 600, padding: '2px 8px', borderRadius: 4,
@@ -105,7 +105,7 @@ export default function Dashboard() {
 
                     <div style={{ marginTop: 12, paddingTop: 8, borderTop: '0.5px solid var(--border)' }}>
                         <NavLink to="/workouts" style={{ color: 'var(--purple-light)', textDecoration: 'none' }}>
-                            View all workouts →
+                            View all logs →
                         </NavLink>
                     </div>
                 </div>

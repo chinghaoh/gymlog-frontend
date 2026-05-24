@@ -33,67 +33,15 @@ export default function Workouts() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
         <h1 style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Workouts</h1>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {view === 'workouts' && (
-            <button onClick={() => setIsCreateWorkoutOpen(true)} style={{
-              background: 'var(--purple)', color: 'white',
-              border: 'none', borderRadius: 7, padding: '8px 16px',
-              fontWeight: 600, cursor: 'pointer'
-            }}>+ New Workout</button>
-          )}
-          {view === 'logs' && (
-            <button onClick={() => setIsLogModalOpen(true)} style={{
-              background: 'var(--purple)', color: 'white',
-              border: 'none', borderRadius: 7, padding: '8px 16px',
-              fontWeight: 600, cursor: 'pointer'
-            }}>+ Log Workout</button>
-          )}
-        </div>
       </div>
 
-      {/* View toggle */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: '1rem', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 8, padding: 3, width: 'fit-content' }}>
-        <button onClick={() => setView('workouts')} style={{
-          padding: '6px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',
-          background: view === 'workouts' ? 'var(--purple)' : 'transparent',
-          color: view === 'workouts' ? 'white' : 'var(--text-muted)',
-          fontWeight: view === 'workouts' ? 600 : 400
-        }}>Workouts</button>
-        <button onClick={() => setView('logs')} style={{
-          padding: '6px 16px', borderRadius: 6, border: 'none', cursor: 'pointer',
-          background: view === 'logs' ? 'var(--purple)' : 'transparent',
-          color: view === 'logs' ? 'white' : 'var(--text-muted)',
-          fontWeight: view === 'logs' ? 600 : 400
-        }}>Logs</button>
-      </div>
 
       {/* Content */}
-      {view === 'workouts' ? (
-        <WorkoutView
-          workouts={workouts}
-          onDelete={(id) => setWorkouts(prev => prev.filter(w => w.id !== id))}
-        />
-      ) : (
-        <WorkoutLogsView
-          workouts={logs}
-          onDelete={(id) => setLogs(prev => prev.filter(l => l.id !== id))}
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-          currentPage={currentPage}
-          totalPages={Math.ceil(logs.length / itemsPerPage)}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-        />
-      )}
-
-      {/* Log workout modal */}
-      {isLogModalOpen && (
-        <LogWorkoutModal
-          onClose={() => setIsLogModalOpen(false)}
-          onLogged={(newLog) => setLogs(prev => [newLog, ...prev])}
-        />
-      )}
-
+      <WorkoutView
+        workouts={workouts}
+        onDelete={(id) => setWorkouts(prev => prev.filter(w => w.id !== id))}
+      />
+    
       {/* Create workout modal */}
       {isCreateWorkoutOpen && (
         <CreateWorkoutModal

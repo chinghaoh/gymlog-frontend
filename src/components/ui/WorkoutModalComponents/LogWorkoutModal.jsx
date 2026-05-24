@@ -8,8 +8,9 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
   const [workouts, setWorkouts] = useState([])
   const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
-  const [energyLevel, setEnergyLevel] = useState('')
-  const [notes, setNotes] = useState('')
+  const [energyLevel, setEnergyLevel] = useState('5')
+  const [error, setError] = useState('')
+
 
   useEffect(() => {
     if (!user) return
@@ -19,8 +20,15 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
   }, [user])
 
   const handleSubmit = async () => {
-    if (!selectedWorkoutId || !date) return
-
+    if (!selectedWorkoutId) {
+      setError('Please select a workout')
+      return
+    }
+    if (!date) {
+      setError('Please select a date')
+      return
+    }
+    setError('')
     try {
       const newLog = await apiClient(
         `/api/workoutlogs?userId=${user.id}`,
@@ -29,7 +37,7 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
           body: JSON.stringify({
             workoutId: Number(selectedWorkoutId),
             date: date,
-            energyLevel: energyLevel ? Number(energyLevel) : null
+            energyLevel: energyLevel ? Number(energyLevel) : 5
           })
         }
       )
@@ -81,13 +89,13 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
             <input className="input-field" type="number" min="1" max="10" value={energyLevel}
               onChange={e => setEnergyLevel(e.target.value)} placeholder="8" style={inputStyle} />
           </div>
-
-          <div>
-            <label style={{ display: 'block', color: 'var(--text-muted)', marginBottom: 6 }}>Notes (optional)</label>
-            <input className="input-field" type="text" value={notes}
-              onChange={e => setNotes(e.target.value)} placeholder="Any notes..." style={inputStyle} />
-          </div>
         </div>
+
+        {error && (
+          <div style={{ padding: '0 1.25rem 0.5rem', color: 'var(--red)' }}>
+            {error}
+          </div>
+        )}
 
         {/* Footer */}
         <div style={{ padding: '1rem 1.25rem', borderTop: '0.5px solid var(--border)', display: 'flex', gap: 8 }}>

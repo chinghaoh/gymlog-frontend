@@ -12,6 +12,7 @@ import VerifyEmail from './components/pages/VerifyEmail'
 import ForgotPassword from './components/pages/ForgotPassword'
 import ResetPassword from './components/pages/ResetPassword'
 import AiChatPage from './components/pages/ai/AiChatPage'
+import LogsPage from './components/pages/LogsPage'
 
 export default function App() {
   return (
@@ -30,6 +31,8 @@ export default function App() {
                 <Route path="/dashboard" element={<Dashboard/>} />
                 <Route path="/workouts"  element={<Workouts/>} />
                 <Route path="/workouts/:id" element={<WorkoutDetail />} />
+                <Route path="/logs" element={<LogsPage/>} />
+
                 <Route path="/exercises" element={<Exercises/>} />
                 <Route path="/exercises/:id" element={<ExerciseDetail />} />
                 <Route path="/records"   element={<Records/>} />

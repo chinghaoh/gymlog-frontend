@@ -21,6 +21,7 @@ export default function Sidebar() {
   const navItems = [
     { to: '/dashboard', label: 'Dashboard', color: 'var(--purple)' },
     { to: '/workouts', label: 'Workouts', color: 'var(--teal)' },
+    { to: '/logs', label: 'Logs', color: 'var(--purple-light)'  },
     { to: '/exercises', label: 'Exercises', color: 'var(--amber)' },
     { to: '/records', label: 'Records', color: 'var(--blue)' },
     { to: '/ai', label: 'AI Trainer', color:'var(--cyan)'}
