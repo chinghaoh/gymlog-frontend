@@ -19,8 +19,8 @@ const LEVELS = [
 
 export default function AiChatPage() {
     const navigate = useNavigate()
-    const { user } = useAuth()
-
+    const { user, setUser } = useAuth()
+    
     const [context, setContext] = useState(null)
     const [step, setStep] = useState('loading')
     const [selectedSplit, setSelectedSplit] = useState(null)
@@ -53,6 +53,7 @@ export default function AiChatPage() {
         if (!user?.id) return
         try {
             await saveFitnessLevel(user.id, level.value)
+            setUser(prev => ({ ...prev, fitnessLevel: level.value }))
             setContext(prev => ({ ...prev, fitnessLevel: level.value }))
             await handleGenerate(selectedSplit, level.value)
         } catch {
