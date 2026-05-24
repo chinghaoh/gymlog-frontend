@@ -1,18 +1,26 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 
 export default function WeightProgressionChart({ sets, prWeight }) {
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return ''
+    const [year, month, day] = dateStr.split('-')
+    return `${day}/${month}/${year.slice(2)}`
+  }
+
   const byDate = sets.reduce((acc, set) => {
-    const date = new Date(set.workoutCreatedAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })
+    const date = formatDate(set.logDate)
     if (!acc[date] || Number(set.weight) > Number(acc[date].weight)) {
       acc[date] = set
     }
     return acc
   }, {})
 
-  const data = Object.values(byDate).slice(-10).map(set => ({
-    date: new Date(set.workoutCreatedAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }),
+
+ const data = Object.values(byDate).slice(-10).map(set => ({
+    date: formatDate(set.logDate),
     weight: Number(set.weight)
-  }))
+}))
 
   if (data.length === 0) return null
 

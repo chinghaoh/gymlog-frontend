@@ -16,6 +16,7 @@ export default function ExerciseDetail() {
     const [pr, setPr] = useState(null)
     const [loading, setLoading] = useState(true)
     const [showAddModal, setShowAddModal] = useState(false)
+    const [history, setHistory] = useState([])
 
 
     useEffect(() => {
@@ -23,13 +24,15 @@ export default function ExerciseDetail() {
 
         const fetchData = async () => {
             try {
-                const [exerciseData, setsData, recordsData] = await Promise.all([
+                const [exerciseData, setsData, historyData, recordsData] = await Promise.all([
                     apiClient(`/api/exercises/${id}`),
-                    apiClient(`/api/sets/by-exercise?userId=${user.id}&exerciseId=${id}`),
+                    apiClient(`/api/workoutlogs/sets?userId=${user.id}&exerciseId=${id}`),
+                    apiClient(`/api/workoutlogs/sets/history?userId=${user.id}&exerciseId=${id}`),
                     apiClient(`/api/records?userId=${user.id}`),
                 ])
                 setExercise(exerciseData)
                 setSets(setsData)
+                setHistory(historyData)
                 const exercisePr = recordsData.find(r => r.exerciseId === Number(id))
                 setPr(exercisePr || null)
             } catch (err) {
@@ -119,7 +122,7 @@ export default function ExerciseDetail() {
             {sets.length > 0 && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <WeightProgressionChart sets={sets} prWeight={pr?.weight} />
-                    <SetHistoryList sets={sets} prWeight={pr?.weight} prReps={pr?.reps} />
+                    <SetHistoryList sets={history} prWeight={pr?.weight} prReps={pr?.reps} />
                 </div>
             )}
 
