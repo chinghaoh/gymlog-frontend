@@ -180,7 +180,7 @@ export default function AiChatPage() {
 
                     <div className="flex flex-col gap-2">
                         <button
-                            onClick={() => navigate('/logs')}
+                            onClick={() => navigate('/logs', { state: { openModal: true, workoutId: result.workoutId } })}
                             className="w-full bg-purple text-white border-none rounded-lg py-2.5 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
                         >
                             Go to Logs — track your session

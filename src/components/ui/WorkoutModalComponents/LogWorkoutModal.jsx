@@ -6,14 +6,15 @@ import { inputStyle } from '../../../lib/styles'
 const inputClass = "w-full bg-bg-input border-half rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
 const labelClass = "block text-text-muted text-sm mb-1.5"
 
-export default function LogWorkoutModal({ onClose, onLogged }) {
+export default function LogWorkoutModal({ onClose, onLogged, preselectedWorkoutId  }) {
     const { user } = useAuth()
     const [workouts, setWorkouts] = useState([])
-    const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
+    const [selectedWorkoutId, setSelectedWorkoutId] = useState(preselectedWorkoutId || '')
     const [date, setDate] = useState(new Date().toISOString().split('T')[0])
     const [energyLevel, setEnergyLevel] = useState('5')
     const [error, setError] = useState('')
     const [fieldErrors, setFieldErrors] = useState({})
+    
 
     useEffect(() => {
         if (!user) return

@@ -3,13 +3,17 @@ import { apiClient } from '../../../lib/ApiClient'
 import { useAuth } from '../../context/AuthContext'
 import LogWorkoutModal from '../../ui/WorkoutModalComponents/LogWorkoutModal'
 import WorkoutLogsView from './WorkoutLogsView'
+import { useLocation } from 'react-router-dom'
+
 
 export default function LogsPage() {
   const { user } = useAuth()
+  const location = useLocation() 
   const [logs, setLogs] = useState([])
   const [activeFilter, setActiveFilter] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
   const [isLogModalOpen, setIsLogModalOpen] = useState(false)
+  const [preselectedWorkoutId, setPreselectedWorkoutId] = useState(null)
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -18,6 +22,13 @@ export default function LogsPage() {
           .then(data => setLogs(data))
           .catch(err => console.error(err))
   }, [user])
+
+  useEffect(() => {
+    if (location.state?.openModal) {
+        setIsLogModalOpen(true)
+        setPreselectedWorkoutId(location.state.workoutId)
+    }
+}, [])
 
   return (
       <div>
@@ -45,6 +56,7 @@ export default function LogsPage() {
           {isLogModalOpen && (
               <LogWorkoutModal
                   onClose={() => setIsLogModalOpen(false)}
+                  preselectedWorkoutId={preselectedWorkoutId}
                   onLogged={(newLog) => {
                       setLogs(prev => [newLog, ...prev])
                       setIsLogModalOpen(false)
