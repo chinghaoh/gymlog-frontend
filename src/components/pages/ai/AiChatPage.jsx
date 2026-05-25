@@ -4,17 +4,17 @@ import { getAiContext, generateWorkout, saveFitnessLevel } from '../../services/
 import { useAuth } from '../../context/AuthContext'
 
 const SPLITS = [
-    { label: 'Push Day',    value: 'PUSH' },
-    { label: 'Pull Day',    value: 'PULL' },
-    { label: 'Leg Day',     value: 'LEGS' },
-    { label: 'Upper Body',  value: 'UPPER_BODY' },
-    { label: 'Full Body',   value: 'FULL_BODY' },
+    { label: 'Push Day', value: 'PUSH' },
+    { label: 'Pull Day', value: 'PULL' },
+    { label: 'Leg Day', value: 'LEGS' },
+    { label: 'Upper Body', value: 'UPPER_BODY' },
+    { label: 'Full Body', value: 'FULL_BODY' },
 ]
 
 const LEVELS = [
-    { label: 'Beginner',     value: 'BEGINNER',     desc: 'Less than 1 year of training' },
+    { label: 'Beginner', value: 'BEGINNER', desc: 'Less than 1 year of training' },
     { label: 'Intermediate', value: 'INTERMEDIATE', desc: '1 to 3 years of training' },
-    { label: 'Advanced',     value: 'ADVANCED',     desc: 'More than 3 years of training' },
+    { label: 'Advanced', value: 'ADVANCED', desc: 'More than 3 years of training' },
 ]
 
 const cardClass = "bg-bg-card border-half rounded-xl p-6"
@@ -173,16 +173,27 @@ export default function AiChatPage() {
                         </div>
                     </div>
 
-                    <div className="flex gap-2.5">
+                    {/* Next steps hint */}
+                    <div className="text-text-muted text-xs mb-4 leading-relaxed bg-bg-input rounded-lg px-3.5 py-3">
+                        💡 <span className="text-text-primary font-medium">What's next?</span> View your workout, complete it, then log it in <span className="text-purple-light font-medium">Logs</span> to track your progress and unlock personal records.
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <button
+                            onClick={() => navigate('/logs')}
+                            className="w-full bg-purple text-white border-none rounded-lg py-2.5 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+                        >
+                            Go to Logs — track your session
+                        </button>
                         <button
                             onClick={() => navigate(`/workouts/${result.workoutId}`)}
-                            className="flex-1 bg-purple text-white border-none rounded-lg py-2.5 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+                            className="w-full bg-transparent text-text-primary border border-border rounded-lg py-2.5 text-sm font-semibold cursor-pointer hover:border-purple transition-colors"
                         >
                             View Workout
                         </button>
                         <button
                             onClick={handleReset}
-                            className="flex-1 bg-transparent text-text-muted border-half rounded-lg py-2.5 text-sm cursor-pointer hover:text-text-primary hover:border-half-purple transition-colors"
+                            className="w-full bg-transparent text-text-muted border border-border rounded-lg py-2.5 text-sm font-semibold cursor-pointer hover:border-purple hover:text-text-primary transition-colors"
                         >
                             Generate Another
                         </button>

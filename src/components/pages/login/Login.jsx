@@ -37,6 +37,20 @@ export default function Login() {
         return true
     }
 
+    const handleDemo = async () => {
+        setError('')
+        try {
+            await apiClient('/api/auth/demo', {
+                method: 'POST',
+                skipRedirect: true
+            })
+            await loadUser()
+            navigate('/dashboard')
+        } catch (err) {
+            setError(err.message || 'Failed to start demo. Please try again.')
+        }
+    }
+
     const handleSubmit = async () => {
         if (!validate()) return
 
@@ -195,6 +209,16 @@ export default function Login() {
                 >
                     {isLogin ? 'Sign in' : 'Sign up'}
                 </button>
+
+                {/* Demo button — only show on login tab */}
+                {isLogin && (
+                    <button
+                        onClick={handleDemo}
+                        className="w-full mt-2 py-2.5 rounded-lg text-sm font-semibold bg-transparent border border-border text-text-muted cursor-pointer hover:border-purple hover:text-text-primary transition-colors"
+                    >
+                        Try Demo
+                    </button>
+                )}
 
                 {/* Forgot password */}
                 <div
