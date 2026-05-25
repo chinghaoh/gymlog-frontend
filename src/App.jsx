@@ -31,7 +31,7 @@ export default function App() {
                   <ProtectedRoute>
                       <div className="flex min-h-screen bg-bg-page">
                           <Sidebar />
-                          <main className="flex-1 p-5 text-text-primary overflow-y-auto min-w-0">
+                          <main className="flex-1 p-5 text-text-primary overflow-y-auto min-w-0 pb-20 md:pb-5">
                               <Routes>
                                   <Route path="/dashboard" element={<Dashboard />} />
                                   <Route path="/workouts" element={<Workouts />} />

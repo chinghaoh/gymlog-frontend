@@ -4,6 +4,8 @@ import { useAuth } from '../../context/AuthContext'
 import ExerciseProgressModal from '../../ui/ExerciseModalComponent/ExerciseProgressModel'
 import { useNavigate } from 'react-router-dom'
 import Pagination from '../../ui/Pagination'
+import RecordCard from './RecordCard'
+import RecordTable from './RecordTable'
 
 
 export default function Records() {
@@ -63,15 +65,15 @@ export default function Records() {
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="bg-bg-card border-half rounded-lg px-3.5 py-3">
+                <div className="bg-bg-card border border-border rounded-lg px-3.5 py-3">
                     <div className="text-text-muted text-xs uppercase tracking-wider mb-1">Total PRs</div>
                     <div className="font-semibold text-text-primary">{totalPRs} 🏆</div>
                 </div>
-                <div className="bg-bg-card border-half rounded-lg px-3.5 py-3">
+                <div className="bg-bg-card border border-border rounded-lg px-3.5 py-3">
                     <div className="text-text-muted text-xs uppercase tracking-wider mb-1">PRs this month</div>
                     <div className="font-semibold text-teal">{prsThisMonth} ↑</div>
                 </div>
-                <div className="bg-bg-card border-half rounded-lg px-3.5 py-3">
+                <div className="bg-bg-card border border-border rounded-lg px-3.5 py-3">
                     <div className="text-text-muted text-xs uppercase tracking-wider mb-1">Latest PR</div>
                     <div className="font-semibold text-text-primary mt-1">
                         {latestPR ? latestPR.exerciseName : '—'}
@@ -90,8 +92,8 @@ export default function Records() {
                         onClick={() => { setCategory(cat); setCurrentPage(1) }}
                         className={`px-3 py-1 rounded-full text-sm cursor-pointer transition-colors border-none
                             ${category === cat
-                                ? 'bg-purple-bg text-purple-light border-half-purple'
-                                : 'bg-transparent text-text-muted border-half hover:text-text-primary'
+                                ? 'bg-purple-bg text-purple-light'
+                                : 'bg-transparent text-text-muted hover:text-text-primary'
                             }`}
                     >
                         {cat}
@@ -99,76 +101,45 @@ export default function Records() {
                 ))}
             </div>
 
-            {/* Table */}
-            <div className="bg-bg-card border-half rounded-xl overflow-hidden">
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr className="border-b border-half">
-                            {['', 'Exercise', 'Category', 'Weight', 'Reps', 'Achieved'].map(col => (
-                                <th key={col} className="px-4 py-2.5 text-left text-text-muted font-medium text-sm">
-                                    {col}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            <tr>
-                                <td colSpan={6} className="p-8 text-center text-text-muted">
-                                    Loading...
-                                </td>
-                            </tr>
-                        ) : paginatedRecords.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className="p-8 text-center">
-                                    <div className="text-2xl mb-2">🏆</div>
-                                    <div className="font-semibold text-text-primary mb-1.5">No personal records yet</div>
-                                    <div className="text-text-muted text-sm mb-3">
-                                        Log a workout to start tracking your PRs.
-                                    </div>
-                                    <button
-                                        onClick={() => navigate('/logs')}
-                                        className="bg-purple text-white border-none rounded-lg px-3.5 py-1.5 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
-                                    >
-                                        Log a Workout
-                                    </button>
-                                </td>
-                            </tr>
-                        ) : (
-                            paginatedRecords.map((record, index) => (
-                                <tr
-                                    key={record.id}
-                                    onClick={() => setSelectedRecord(record)}
-                                    className={`cursor-pointer hover:bg-border-light transition-colors
-                                        ${index !== paginatedRecords.length - 1 ? 'border-b border-half' : ''}`}
-                                >
-                                    <td className="px-4 py-2.5">🏆</td>
-                                    <td className="px-4 py-2.5">
-                                        <div className="font-semibold text-text-primary text-sm">{record.exerciseName}</div>
-                                        <div className="text-text-muted text-xs mt-0.5">{record.category}</div>
-                                    </td>
-                                    <td className="px-4 py-2.5">
-                                        <span className="bg-purple-bg text-purple-light text-xs font-semibold px-2 py-0.5 rounded">
-                                            {record.category}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-2.5 text-teal font-semibold text-sm">
-                                        {record.weight}kg
-                                    </td>
-                                    <td className="px-4 py-2.5 text-text-secondary text-sm">
-                                        × {record.reps}
-                                    </td>
-                                    <td className="px-4 py-2.5 text-text-muted text-sm">
-                                        {new Date(record.achievedAt).toLocaleDateString()}
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            {/* Loading */}
+            {loading ? (
+                <div className="bg-bg-card border border-border rounded-xl p-8 text-center text-text-muted">
+                    Loading...
+                </div>
+            ) : paginatedRecords.length === 0 ? (
+                <div className="bg-bg-card border border-border rounded-xl p-8 text-center">
+                    <div className="text-2xl mb-2">🏆</div>
+                    <div className="font-semibold text-text-primary mb-1.5">No personal records yet</div>
+                    <div className="text-text-muted text-sm mb-3">
+                        Log a workout to start tracking your PRs.
+                    </div>
+                    <button
+                        onClick={() => navigate('/logs')}
+                        className="bg-purple text-white border-none rounded-lg px-3.5 py-1.5 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+                    >
+                        Log a Workout
+                    </button>
+                </div>
+            ) : (
+                <>
+                    {/* Desktop */}
+                    <div className="hidden md:block">
+                        <RecordTable
+                            records={paginatedRecords}
+                            onSelect={setSelectedRecord}
+                        />
+                    </div>
 
-            {/* Pagination */}
+                    {/* Mobile */}
+                    <div className="md:hidden">
+                        <RecordCard
+                            records={paginatedRecords}
+                            onSelect={setSelectedRecord}
+                        />
+                    </div>
+                </>
+            )}
+
             <Pagination
                 currentPage={currentPage}
                 totalPages={Math.ceil(filteredRecords.length / itemsPerPage)}
