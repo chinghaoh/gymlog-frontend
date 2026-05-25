@@ -38,6 +38,18 @@ export default function SecuritySection() {
       }
   }
 
+  if (user?.isDemo) {
+    return (
+        <div className="bg-bg-card border border-border rounded-xl px-4 py-8 text-center">
+            <div className="text-2xl mb-2">🔒</div>
+            <div className="font-semibold text-text-primary mb-1.5">Demo account</div>
+            <div className="text-text-muted text-sm">
+                Profile changes are not available in demo mode.
+            </div>
+        </div>
+    )
+}
+
   const inputClass = "w-full bg-bg-input border-half rounded-md px-2.5 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
   const labelClass = "text-text-muted text-xs uppercase tracking-wider block mb-1.5"
 

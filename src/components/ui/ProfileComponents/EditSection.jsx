@@ -55,7 +55,20 @@ export default function EditSection() {
         }
     }
 
+    if (user?.isDemo) {
+        return (
+            <div className="bg-bg-card border border-border rounded-xl px-4 py-8 text-center">
+                <div className="text-2xl mb-2">🔒</div>
+                <div className="font-semibold text-text-primary mb-1.5">Demo account</div>
+                <div className="text-text-muted text-sm">
+                    Profile changes are not available in demo mode.
+                </div>
+            </div>
+        )
+    }
+
     return (
+        
         <div className="bg-bg-card border-half rounded-xl px-4 py-3.5">
             <div className="font-semibold text-text-primary pb-2.5 mb-3">
                 Edit profile
