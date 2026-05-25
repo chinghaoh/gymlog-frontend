@@ -14,6 +14,7 @@ import ResetPassword from './components/pages/login/ResetPassword'
 import AiChatPage from './components/pages/ai/AiChatPage'
 import LogsPage from './components/pages/log/LogsPage'
 import ProtectedRoute from './components/layout/ProtectedRoute'
+import NotFound from './components/pages/NotFound'
 
 export default function App() {
   return (
@@ -42,11 +43,13 @@ export default function App() {
                                   <Route path="/profile" element={<Profile />} />
                                   <Route path="/ai" element={<AiChatPage />} />
                                   <Route index element={<Navigate to="/dashboard" replace />} />
+                                  <Route path="*" element={<NotFound />} />
                               </Routes>
                           </main>
                       </div>
                   </ProtectedRoute>
               } />
+            <Route path="*" element={<Navigate to="/login" replace />} />   
           </Routes>
       </BrowserRouter>
   )

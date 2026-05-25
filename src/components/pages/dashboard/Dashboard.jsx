@@ -56,7 +56,7 @@ export default function Dashboard() {
             {/* Stat cards */}
             <div className="grid grid-cols-3 gap-3 mb-6">
                 {stats.map(({ label, value, color }) => (
-                    <div key={label} className="bg-bg-card border-half rounded-xl p-4">
+                    <div key={label} className="bg-bg-card rounded-xl p-4 border border-border">
                         <div className="text-text-muted text-sm mb-2">{label}</div>
                         <div className={`font-bold text-lg ${color}`}>{value}</div>
                     </div>
@@ -67,7 +67,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-3 mb-6">
 
                 {/* Recent Workouts */}
-                <div className="bg-bg-card border-half rounded-xl p-4">
+                <div className="bg-bg-card rounded-xl p-4 border border-border">
                     <div className="font-semibold text-text-primary mb-3">Recent Workouts</div>
 
                     {recentWorkouts.length === 0 ? (
@@ -86,7 +86,7 @@ export default function Dashboard() {
                                 </button>
                                 <button
                                     onClick={() => navigate('/workouts')}
-                                    className="bg-transparent text-text-muted border-half rounded-lg px-3.5 py-1.5 text-sm font-semibold cursor-pointer hover:text-text-primary transition-colors"
+                                    className="bg-transparent text-text-muted border border-border rounded-lg px-3.5 py-1.5 text-sm font-semibold cursor-pointer hover:text-text-primary transition-colors"
                                 >
                                     Create Workout
                                 </button>
@@ -96,20 +96,22 @@ export default function Dashboard() {
                         recentWorkouts.map((workout, index) => (
                             <div
                                 key={workout.id}
-                                className={`flex items-center justify-between py-2 ${index !== recentWorkouts.length - 1 ? 'border-b border-half' : ''}`}
+                                className={`flex items-center justify-between py-2 ${index !== recentWorkouts.length - 1 ? 'border-b border-border' : ''}`}
                             >
-                                <div className="font-medium text-text-primary text-sm">{workout.workoutName}</div>
-                                <div className="text-text-muted text-xs mt-0.5">
+                                <div className="font-medium text-text-primary text-sm flex-1">{workout.workoutName}</div>
+                                <div className="text-text-muted text-xs flex-1 text-center">
                                     {workout.date} · {workout.durationMinutes ? `${workout.durationMinutes} min` : '—'}
                                 </div>
+                                <div className="flex-1 flex justify-end">
                                 <span className="bg-purple-bg text-purple-light text-xs font-semibold px-2 py-0.5 rounded">
                                     {workout.splitCategory}
                                 </span>
+                                </div>
                             </div>
                         ))
                     )}
 
-                    <div className="mt-3 pt-2 border-t border-half">
+                    <div className="mt-3 pt-2 border-t border-border">
                         <NavLink to="/logs" className="text-purple-light text-sm no-underline hover:text-purple transition-colors">
                             View all logs →
                         </NavLink>
@@ -117,7 +119,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Latest PRs */}
-                <div className="bg-bg-card border-half rounded-xl p-4">
+                <div className="bg-bg-card rounded-xl p-4 border border-border">
                     <div className="font-semibold text-text-primary mb-3">Latest Personal Records</div>
 
                     {latestPrs.length === 0 ? (
@@ -126,7 +128,7 @@ export default function Dashboard() {
                         latestPrs.map((pr, index) => (
                             <div
                                 key={pr.id}
-                                className={`flex items-center justify-between py-2 ${index !== latestPrs.length - 1 ? 'border-b border-half' : ''}`}
+                                className={`flex items-center justify-between py-2 ${index !== latestPrs.length - 1 ? 'border-b border-border' : ''}`}
                             >
                                 <div>
                                     <div className="font-medium text-text-primary text-sm">{pr.exerciseName}</div>
@@ -139,7 +141,7 @@ export default function Dashboard() {
                         ))
                     )}
 
-                    <div className="mt-3 pt-2 border-t border-half">
+                    <div className="mt-3 pt-2 border-t border-border">
                         <NavLink to="/records" className="text-purple-light text-sm no-underline hover:text-purple transition-colors">
                             View all records →
                         </NavLink>
@@ -166,7 +168,7 @@ export default function Dashboard() {
                     Rest day
                 </span>
                 <span className="flex items-center gap-1 text-text-muted text-sm">
-                    <span className="w-2 h-2 rounded-sm border-half-purple inline-block" />
+                    <span className="w-2 h-2 rounded-sm border border-purple inline-block" />
                     Today
                 </span>
             </div>
