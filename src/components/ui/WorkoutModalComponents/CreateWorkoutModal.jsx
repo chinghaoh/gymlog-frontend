@@ -11,13 +11,15 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
     const [splitCategory, setSplitCategory] = useState('PUSH')
     const [durationMinutes, setDurationMinutes] = useState('60')
     const [error, setError] = useState('')
+    const [fieldErrors, setFieldErrors] = useState({})
 
     const handleSubmit = async () => {
         if (!name.trim()) {
-            setError('Please enter a workout name')
+            setFieldErrors({ name: 'Please enter a workout name' })
             return
         }
         setError('')
+        setFieldErrors({})
         try {
             const newWorkout = await apiClient(`/api/workouts?userId=${user.id}`, {
                 method: 'POST',
@@ -30,7 +32,11 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
             onCreated(newWorkout)
             onClose()
         } catch (err) {
-            setError('Something went wrong. Please try again.')
+            if (err.fieldErrors) {
+                setFieldErrors(err.fieldErrors)
+            } else {
+                setError(err.message || 'Something went wrong.')
+            }
         }
     }
 
@@ -61,10 +67,11 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
                         <input
                             type="text"
                             value={name}
-                            onChange={e => setName(e.target.value)}
+                            onChange={e => { setName(e.target.value); setFieldErrors(prev => ({ ...prev, name: null })) }}
                             placeholder="e.g. Push Day"
-                            className={inputClass}
+                            className={`${inputClass} ${fieldErrors.name ? 'border-half-red' : ''}`}
                         />
+                        {fieldErrors.name && <div className="text-red text-xs mt-1">{fieldErrors.name}</div>}
                     </div>
                     <div>
                         <label className={labelClass}>Split</label>
@@ -77,6 +84,7 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
                                 <option key={s} value={s}>{s}</option>
                             ))}
                         </select>
+                        {fieldErrors.splitCategory && <div className="text-red text-xs mt-1">{fieldErrors.splitCategory}</div>}
                     </div>
                     <div>
                         <label className={labelClass}>Duration (min)</label>
@@ -85,14 +93,15 @@ export default function CreateWorkoutModal({ onClose, onCreated }) {
                             value={durationMinutes}
                             onChange={e => setDurationMinutes(e.target.value)}
                             placeholder="60"
-                            className={inputClass}
+                            className={`${inputClass} ${fieldErrors.durationMinutes ? 'border-half-red' : ''}`}
                         />
+                        {fieldErrors.durationMinutes && <div className="text-red text-xs mt-1">{fieldErrors.durationMinutes}</div>}
                     </div>
                     {error && <div className="text-red text-sm">{error}</div>}
                 </div>
 
                 {/* Footer */}
-                <div className="flex gap-2 px-5 py-4 border-t border-half">
+                <div className="flex gap-2 px-5 py-4">
                     <button
                         onClick={handleSubmit}
                         className="bg-purple text-white border-none rounded-lg px-4 py-2 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"

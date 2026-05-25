@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { apiClient } from '../../../lib/apiClient'
 
-const inputClass = "w-full bg-bg-input border-half rounded-md px-2.5 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
+const inputClass = (hasError) =>
+    `w-full bg-bg-input border-half rounded-md px-2.5 py-2 text-sm text-text-primary outline-none transition-colors ${hasError ? 'border-half-red' : 'focus:border-half-purple'}`
 
 export default function WorkoutSetForm({ workoutId, exercises, sets, onSetAdded }) {
     const [selectedExerciseId, setSelectedExerciseId] = useState('')
@@ -9,6 +10,7 @@ export default function WorkoutSetForm({ workoutId, exercises, sets, onSetAdded 
     const [weight, setWeight] = useState('')
     const [exerciseSearch, setExerciseSearch] = useState('')
     const [showExerciseDropdown, setShowExerciseDropdown] = useState(false)
+    const [fieldErrors, setFieldErrors] = useState({})
 
     useEffect(() => {
         const handleClickOutside = () => setShowExerciseDropdown(false)
@@ -21,7 +23,19 @@ export default function WorkoutSetForm({ workoutId, exercises, sets, onSetAdded 
     }
 
     const handleAddSet = async () => {
-        if (!selectedExerciseId || !reps || !weight) return
+        const errors = {}
+        if (!selectedExerciseId) errors.exercise = 'Please select an exercise'
+        if (weight === '' || weight === null) errors.weight = 'Weight is required'
+        else if (Number(weight) < 0) errors.weight = 'Weight cannot be negative'
+        if (reps === '' || reps === null) errors.reps = 'Reps is required'
+        else if (Number(reps) < 1) errors.reps = 'Must be at least 1'
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors)
+            return
+        }
+
+        setFieldErrors({})
         try {
             await apiClient(`/api/sets?workoutId=${workoutId}&exerciseId=${selectedExerciseId}`, {
                 method: 'POST',
@@ -37,8 +51,13 @@ export default function WorkoutSetForm({ workoutId, exercises, sets, onSetAdded 
             setReps('')
             setWeight('')
             setExerciseSearch('')
+            setFieldErrors({})
         } catch (err) {
-            console.error(err)
+            if (err.fieldErrors) {
+                setFieldErrors(err.fieldErrors)
+            } else {
+                console.error(err)
+            }
         }
     }
 
@@ -58,12 +77,14 @@ export default function WorkoutSetForm({ workoutId, exercises, sets, onSetAdded 
                         setExerciseSearch(e.target.value)
                         setShowExerciseDropdown(true)
                         setSelectedExerciseId('')
+                        setFieldErrors(prev => ({ ...prev, exercise: null }))
                     }}
                     onFocus={() => setShowExerciseDropdown(true)}
                     onClick={e => e.stopPropagation()}
                     placeholder="Search exercise..."
-                    className={inputClass}
+                    className={inputClass(fieldErrors.exercise)}
                 />
+                {fieldErrors.exercise && <div className="text-red text-xs mt-1">{fieldErrors.exercise}</div>}
                 {showExerciseDropdown && (
                     <div className="absolute top-full left-0 right-0 bg-bg-card border-half rounded-md max-h-48 overflow-y-auto z-50">
                         {filteredExercises.length === 0 ? (
@@ -77,6 +98,7 @@ export default function WorkoutSetForm({ workoutId, exercises, sets, onSetAdded 
                                         setSelectedExerciseId(ex.id)
                                         setExerciseSearch(ex.name)
                                         setShowExerciseDropdown(false)
+                                        setFieldErrors(prev => ({ ...prev, exercise: null }))
                                     }}
                                     className="px-3 py-2 text-sm text-text-primary cursor-pointer hover:bg-border-light transition-colors border-b border-half last:border-b-0"
                                 >
@@ -94,9 +116,13 @@ export default function WorkoutSetForm({ workoutId, exercises, sets, onSetAdded 
                 <input
                     type="number"
                     value={weight}
-                    onChange={e => setWeight(e.target.value)}
-                    className={inputClass}
+                    onChange={e => {
+                        setWeight(e.target.value)
+                        setFieldErrors(prev => ({ ...prev, weight: null }))
+                    }}
+                    className={inputClass(fieldErrors.weight)}
                 />
+                {fieldErrors.weight && <div className="text-red text-xs mt-1">{fieldErrors.weight}</div>}
             </div>
 
             {/* Reps */}
@@ -105,9 +131,13 @@ export default function WorkoutSetForm({ workoutId, exercises, sets, onSetAdded 
                 <input
                     type="number"
                     value={reps}
-                    onChange={e => setReps(e.target.value)}
-                    className={inputClass}
+                    onChange={e => {
+                        setReps(e.target.value)
+                        setFieldErrors(prev => ({ ...prev, reps: null }))
+                    }}
+                    className={inputClass(fieldErrors.reps)}
                 />
+                {fieldErrors.reps && <div className="text-red text-xs mt-1">{fieldErrors.reps}</div>}
             </div>
 
             <button

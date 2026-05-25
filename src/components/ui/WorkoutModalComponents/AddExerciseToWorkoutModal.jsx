@@ -16,6 +16,7 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
     const [fetchingWorkouts, setFetchingWorkouts] = useState(true)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [fieldErrors, setFieldErrors] = useState({})
 
     useEffect(() => {
         if (!user) return
@@ -35,6 +36,8 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
 
     const updateSet = (index, field, value) => {
         setSets(prev => prev.map((s, i) => i === index ? { ...s, [field]: value } : s))
+        // clear set errors when user types
+        setFieldErrors({})
     }
 
     const addSet = () => setSets(prev => [...prev, { weight: 0, reps: 0 }])
@@ -44,10 +47,32 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
         setSets(prev => prev.filter((_, i) => i !== index))
     }
 
+    const validateSets = () => {
+        const errors = {}
+        sets.forEach((set, i) => {
+            if (set.reps === '' || set.reps === null || Number(set.reps) < 1) {
+                errors[`set_${i}_reps`] = 'Required'
+            }
+            if (set.weight === '' || set.weight === null || Number(set.weight) < 0) {
+                errors[`set_${i}_weight`] = 'Required'
+            }
+        })
+        return errors
+    }
+
     const handleConfirm = async () => {
         if (!selectedWorkoutId) { setError('Please select a workout.'); return }
+
+        const errors = validateSets()
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors)
+            return
+        }
+
         setLoading(true)
         setError(null)
+        setFieldErrors({})
+
         try {
             await apiClient(`/api/sets/bulk?workoutId=${selectedWorkoutId}&exerciseId=${exercise.id}`, {
                 method: 'POST',
@@ -62,7 +87,11 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
             navigate(`/workouts/${selectedWorkoutId}`)
             onClose()
         } catch (err) {
-            setError(err.message || 'Something went wrong.')
+            if (err.fieldErrors) {
+                setFieldErrors(err.fieldErrors)
+            } else {
+                setError(err.message || 'Something went wrong.')
+            }
         } finally {
             setLoading(false)
         }
@@ -76,7 +105,7 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
             <div className="bg-bg-card border-half rounded-xl w-full max-w-[440px] flex flex-col max-h-[90vh] overflow-hidden">
 
                 {/* Header */}
-                <div className="flex items-start justify-between px-4.5 py-4 border-b border-half flex-shrink-0">
+                <div className="flex items-start justify-between px-4 py-4 flex-shrink-0">
                     <div>
                         <div className="font-semibold text-text-primary">Add exercise to workout</div>
                         <div className="text-text-muted text-sm mt-0.5">Choose a workout and log your sets</div>
@@ -89,8 +118,8 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
                     </button>
                 </div>
 
-                {/* Exercise name strip */}
-                <div className="px-4.5 py-2.5 bg-bg-page border-b border-half flex-shrink-0">
+                {/* Exercise strip */}
+                <div className="px-4 py-2.5 bg-bg-page flex-shrink-0">
                     <div className="font-semibold text-text-primary text-sm">{exercise?.name}</div>
                     <div className="text-text-muted text-xs mt-0.5">
                         {exercise?.category} · {exercise?.targetMuscle} · {exercise?.equipment}
@@ -98,7 +127,7 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
                 </div>
 
                 {/* Body */}
-                <div className="px-4.5 py-3.5 flex flex-col gap-3.5 overflow-y-auto flex-1">
+                <div className="px-4 py-3.5 flex flex-col gap-3.5 overflow-y-auto flex-1">
 
                     {/* Workout select */}
                     <div>
@@ -143,42 +172,48 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
                         {/* Set rows */}
                         <div className="flex flex-col gap-1.5">
                             {sets.map((set, i) => (
-                                <div key={i} className="grid grid-cols-[28px_1fr_1fr_28px] gap-1.5 items-center">
-                                    <div className="w-5.5 h-5.5 bg-purple-bg rounded flex items-center justify-center font-semibold text-purple-light text-xs">
-                                        {i + 1}
+                                <div key={i} className="flex flex-col gap-0.5">
+                                    <div className="grid grid-cols-[28px_1fr_1fr_28px] gap-1.5 items-center">
+                                        <div className="w-5 h-5 bg-purple-bg rounded flex items-center justify-center font-semibold text-purple-light text-xs">
+                                            {i + 1}
+                                        </div>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={set.weight}
+                                            onChange={e => updateSet(i, 'weight', e.target.value)}
+                                            className={`${inputClass} ${fieldErrors[`set_${i}_weight`] ? 'border-half-red' : ''}`}
+                                        />
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={set.reps}
+                                            onChange={e => updateSet(i, 'reps', e.target.value)}
+                                            className={`${inputClass} ${fieldErrors[`set_${i}_reps`] ? 'border-half-red' : ''}`}
+                                        />
+                                        <button
+                                            onClick={() => removeSet(i)}
+                                            disabled={sets.length === 1}
+                                            className={`bg-transparent border-none flex items-center justify-center text-sm
+                                                ${sets.length === 1 ? 'text-border cursor-not-allowed' : 'text-red cursor-pointer hover:opacity-70'}`}
+                                        >
+                                            ×
+                                        </button>
                                     </div>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={set.weight}
-                                        onChange={e => updateSet(i, 'weight', e.target.value)}
-                                        className={inputClass}
-                                    />
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={set.reps}
-                                        onChange={e => updateSet(i, 'reps', e.target.value)}
-                                        className={inputClass}
-                                    />
-                                    <button
-                                        onClick={() => removeSet(i)}
-                                        disabled={sets.length === 1}
-                                        className={`bg-transparent border-none flex items-center justify-center text-sm
-                                            ${sets.length === 1 ? 'text-border cursor-not-allowed' : 'text-red cursor-pointer hover:opacity-70'}`}
-                                    >
-                                        ×
-                                    </button>
+                                    {/* per-set errors */}
+                                    {(fieldErrors[`set_${i}_weight`] || fieldErrors[`set_${i}_reps`]) && (
+                                        <div className="text-red text-xs pl-8">
+                                            {fieldErrors[`set_${i}_weight`] && <span>Weight required · </span>}
+                                            {fieldErrors[`set_${i}_reps`] && <span>Reps required</span>}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
 
                         {/* Add set */}
-                        <div
-                            onClick={addSet}
-                            className="flex items-center gap-1.5 mt-2 cursor-pointer"
-                        >
-                            <div className="w-5.5 h-5.5 rounded bg-bg-page border border-dashed border-border flex items-center justify-center text-purple text-sm">
+                        <div onClick={addSet} className="flex items-center gap-1.5 mt-2 cursor-pointer">
+                            <div className="w-5 h-5 rounded bg-bg-page border border-dashed border-border flex items-center justify-center text-purple text-sm">
                                 +
                             </div>
                             <span className="text-purple text-sm font-medium">Add another set</span>
@@ -187,7 +222,7 @@ export default function AddExerciseToWorkoutModal({ exercise, onClose, onSuccess
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-end gap-2 px-4.5 py-3 border-t border-half flex-shrink-0">
+                <div className="flex items-center justify-end gap-2 px-4 py-3 flex-shrink-0">
                     {error && <span className="text-red text-sm flex-1">{error}</span>}
                     <button
                         onClick={onClose}

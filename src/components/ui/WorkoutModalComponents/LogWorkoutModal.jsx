@@ -13,6 +13,7 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0])
     const [energyLevel, setEnergyLevel] = useState('5')
     const [error, setError] = useState('')
+    const [fieldErrors, setFieldErrors] = useState({})
 
     useEffect(() => {
         if (!user) return
@@ -22,9 +23,21 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
     }, [user])
 
     const handleSubmit = async () => {
-        if (!selectedWorkoutId) { setError('Please select a workout'); return }
-        if (!date) { setError('Please select a date'); return }
         setError('')
+        setFieldErrors({})
+
+        const errors = {}
+        if (!selectedWorkoutId) errors.workoutId = 'Please select a workout'
+        if (!date) errors.date = 'Please select a date'
+        if (energyLevel && (Number(energyLevel) < 1 || Number(energyLevel) > 10)) {
+            errors.energyLevel = 'Energy level must be between 1 and 10'
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors)
+            return
+        }
+
         try {
             const newLog = await apiClient(`/api/workoutlogs?userId=${user.id}`, {
                 method: 'POST',
@@ -37,7 +50,11 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
             onLogged(newLog)
             onClose()
         } catch (err) {
-            console.error(err)
+            if (err.fieldErrors) {
+                setFieldErrors(err.fieldErrors)
+            } else {
+                setError(err.message || 'Something went wrong.')
+            }
         }
     }
 
@@ -65,28 +82,27 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
                 <div className="px-5 py-4 flex flex-col gap-3">
                     <div>
                         <label className={labelClass}>Workout</label>
-                        <div className="relative">
-                            <select
-                                value={selectedWorkoutId}
-                                onChange={e => setSelectedWorkoutId(e.target.value)}
-                                className={`${inputClass} appearance-none pr-8`}
-                            >
-                                <option value=''>Select a workout</option>
-                                {workouts.map(w => (
-                                    <option key={w.id} value={w.id}>{w.name} — {w.splitCategory}</option>
-                                ))}
-                            </select>
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">▾</span>
-                        </div>
+                        <select
+                            value={selectedWorkoutId}
+                            onChange={e => { setSelectedWorkoutId(e.target.value); setFieldErrors(prev => ({ ...prev, workoutId: null })) }}
+                            className={`${inputClass} ${fieldErrors.workoutId ? 'border-half-red' : ''}`}
+                        >
+                            <option value=''>Select a workout</option>
+                            {workouts.map(w => (
+                                <option key={w.id} value={w.id}>{w.name} — {w.splitCategory}</option>
+                            ))}
+                        </select>
+                        {fieldErrors.workoutId && <div className="text-red text-xs mt-1">{fieldErrors.workoutId}</div>}
                     </div>
                     <div>
                         <label className={labelClass}>Date</label>
                         <input
                             type="date"
                             value={date}
-                            onChange={e => setDate(e.target.value)}
-                            className={inputClass}
+                            onChange={e => { setDate(e.target.value); setFieldErrors(prev => ({ ...prev, date: null })) }}
+                            className={`${inputClass} ${fieldErrors.date ? 'border-half-red' : ''}`}
                         />
+                        {fieldErrors.date && <div className="text-red text-xs mt-1">{fieldErrors.date}</div>}
                     </div>
                     <div>
                         <label className={labelClass}>Energy level (1-10)</label>
@@ -95,16 +111,17 @@ export default function LogWorkoutModal({ onClose, onLogged }) {
                             min="1"
                             max="10"
                             value={energyLevel}
-                            onChange={e => setEnergyLevel(e.target.value)}
-                            placeholder="8"
-                            className={inputClass}
+                            onChange={e => { setEnergyLevel(e.target.value); setFieldErrors(prev => ({ ...prev, energyLevel: null })) }}
+                            placeholder="5"
+                            className={`${inputClass} ${fieldErrors.energyLevel ? 'border-half-red' : ''}`}
                         />
+                        {fieldErrors.energyLevel && <div className="text-red text-xs mt-1">{fieldErrors.energyLevel}</div>}
                     </div>
                     {error && <div className="text-red text-sm">{error}</div>}
                 </div>
 
                 {/* Footer */}
-                <div className="flex gap-2 px-5 py-4 border-t border-half">
+                <div className="flex gap-2 px-5 py-4">
                     <button
                         onClick={handleSubmit}
                         className="bg-purple text-white border-none rounded-lg px-4 py-2 text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
