@@ -48,7 +48,6 @@ export default function Records() {
                 const data = await apiClient(`/api/records?userId=${user.id}`)
                 setRecords(data)
             } catch (err) {
-                console.error(err)
             } finally {
                 setLoading(false)
             }

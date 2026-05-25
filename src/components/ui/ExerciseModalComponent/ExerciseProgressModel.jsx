@@ -13,7 +13,7 @@ export default function ExerciseProgressModal({ record, onClose }) {
         if (!user || !record) return
         const fetchSets = async () => {
             try {
-                const data = await apiClient(`/api/sets/by-exercise?userId=${user.id}&exerciseId=${record.exerciseId}`)
+                const data = await apiClient(`/api/workoutlogs/sets/history?userId=${user.id}&exerciseId=${record.exerciseId}`)
                 setSets(data)
             } catch (err) {
                 console.error(err)

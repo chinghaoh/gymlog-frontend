@@ -19,7 +19,7 @@ export default function LogTable({ logs, onDelete }) {
                     {logs.map((log, index) => (
                         <tr
                             key={log.id}
-                            onClick={() => navigate(`/workouts/${log.workoutId}`)}
+                            onClick={() => navigate(`/logs/${log.id}`)}
                             className={`cursor-pointer hover:bg-border-light transition-colors
                                 ${index !== logs.length - 1 ? 'border-b border-border' : ''}`}
                         >

@@ -15,6 +15,7 @@ import AiChatPage from './components/pages/ai/AiChatPage'
 import LogsPage from './components/pages/log/LogsPage'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import NotFound from './components/pages/NotFound'
+import LogDetail from './components/pages/log/LogDetail'
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
                                   <Route path="/workouts" element={<Workouts />} />
                                   <Route path="/workouts/:id" element={<WorkoutDetail />} />
                                   <Route path="/logs" element={<LogsPage />} />
+                                  <Route path="/logs/:logId" element={<LogDetail />} />
                                   <Route path="/exercises" element={<Exercises />} />
                                   <Route path="/exercises/:id" element={<ExerciseDetail />} />
                                   <Route path="/records" element={<Records />} />

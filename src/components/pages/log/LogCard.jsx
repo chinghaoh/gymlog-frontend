@@ -8,7 +8,7 @@ export default function LogCard({ logs, onDelete }) {
             {logs.map(log => (
                 <div
                     key={log.id}
-                    onClick={() => navigate(`/workouts/${log.workoutId}`)}
+                    onClick={() => navigate(`/logs/${log.id}`)}
                     className="bg-bg-card border border-border rounded-xl p-4 cursor-pointer hover:border-purple transition-colors"
                 >
                     {/* Top row — name + split badge */}
