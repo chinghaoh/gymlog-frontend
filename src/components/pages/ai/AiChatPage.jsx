@@ -29,6 +29,8 @@ export default function AiChatPage() {
     const [selectedSplit, setSelectedSplit] = useState(null)
     const [result, setResult] = useState(null)
     const [errorMsg, setErrorMsg] = useState(null)
+    const [dots, setDots] = useState('')
+
 
     useEffect(() => {
         getAiContext(user?.id)
@@ -38,6 +40,14 @@ export default function AiChatPage() {
             })
             .catch(() => setStep('error'))
     }, [])
+
+    useEffect(() => {
+        if (step !== 'generating') return
+        const interval = setInterval(() => {
+            setDots(prev => prev.length >= 3 ? '' : prev + '.')
+        }, 500)
+        return () => clearInterval(interval)
+    }, [step])
 
     const handleSplitSelect = async (split) => {
         setSelectedSplit(split)
@@ -145,17 +155,34 @@ export default function AiChatPage() {
 
             {/* Step — generating */}
             {step === 'generating' && (
-                <div className={`${cardClass} text-center py-10`}>
-                    <div className="text-4xl mb-4">🏋️</div>
-                    <div className="font-semibold text-text-primary mb-2">
-                        Building your {selectedSplit?.label}...
+                <div className={`${cardClass} text-center py-12`}>
+                    {/* Spinner */}
+                    <div className="flex justify-center mb-6">
+                        <div className="w-12 h-12 rounded-full border-4 border-border border-t-purple animate-spin" />
                     </div>
-                    <div className="text-text-muted text-sm">
+
+                    <div className="font-semibold text-text-primary mb-2">
+                        Building your {selectedSplit?.label}{dots}
+                    </div>
+                    <div className="text-text-muted text-sm mb-6">
                         Your AI trainer is reviewing your history and selecting the best exercises for you.
+                    </div>
+
+                    {/* Progress steps */}
+                    <div className="flex flex-col gap-2 text-left bg-bg-input rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-sm text-text-muted">
+                            <span className="text-teal">✓</span> Analysing your personal records
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-text-muted">
+                            <span className="text-teal">✓</span> Checking recent workout history
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-text-primary font-medium">
+                            <div className="w-3 h-3 rounded-full border-2 border-purple border-t-transparent animate-spin flex-shrink-0" />
+                            Selecting optimal exercises{dots}
+                        </div>
                     </div>
                 </div>
             )}
-
             {/* Step — result */}
             {step === 'result' && result && (
                 <div className={cardClass}>
