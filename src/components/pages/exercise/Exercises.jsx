@@ -17,7 +17,7 @@ export default function Exercises() {
     const [search, setSearch] = useState(searchParams.get('search') || '')
     const navigate = useNavigate()
 
-    const itemsPerPage = 10
+    const itemsPerPage = 8
 
     const paginatedExercises = exercises.slice(
         (currentPage - 1) * itemsPerPage,
