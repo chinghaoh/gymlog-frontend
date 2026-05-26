@@ -82,7 +82,7 @@ export default function ExerciseDetail() {
                             />
                             <div className="hidden w-full h-full flex-col items-center justify-center gap-1 text-text-muted">
                                 <span className="text-2xl">🏋️</span>
-                                <span className="text-xs">No preview</span>
+                                <span className="text-xs">Images coming soon</span>
                             </div>
                         </>
                     ) : (

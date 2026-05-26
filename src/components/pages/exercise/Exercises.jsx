@@ -110,11 +110,11 @@ export default function Exercises() {
                             ) : (
                                 <div className="flex flex-col items-center justify-center gap-1.5 text-text-muted">
                                     <span className="text-3xl">🏋️</span>
-                                    <span className="text-xs">No preview</span>
+                                    <span className="text-xs">Images coming soon</span>
                                 </div>
                             )}
                         </div>
-                        
+
                         <div className="p-3 flex flex-col flex-1">
                             {/* Name */}
                             <div className="font-semibold text-text-primary text-sm mb-2">
