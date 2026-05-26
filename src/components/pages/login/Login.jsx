@@ -23,15 +23,21 @@ export default function Login() {
     const getFieldError = (field) => {
         if (!touched[field]) return null
         if (field === 'email' && !email.includes('@')) return 'Please enter a valid email'
-        if (field === 'password' && password.length < 6) return 'Password must be at least 6 characters'
+        if (field === 'password') {
+            if (password.length < 6) return 'Password must be at least 6 characters'
+            if (!/[0-9]/.test(password)) return 'Password must contain at least one digit'
+            if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter'
+        }
         if (field === 'confirmPassword' && password !== confirmPassword) return 'Passwords do not match'
         if (field === 'name' && name.trim() === '') return 'Please enter your name'
         return null
     }
-
+    
     const validate = () => {
         if (!email.includes('@')) { setError('Please enter a valid email'); return false }
         if (password.length < 6) { setError('Password must be at least 6 characters'); return false }
+        if (!/[0-9]/.test(password)) { setError('Password must contain at least one digit'); return false }
+        if (!/[A-Z]/.test(password)) { setError('Password must contain at least one uppercase letter'); return false }
         if (!isLogin && password !== confirmPassword) { setError('Passwords do not match'); return false }
         if (!isLogin && name.trim() === '') { setError('Please enter your name'); return false }
         return true
@@ -84,6 +90,8 @@ export default function Login() {
     const isFormValid = () => {
         if (!email.includes('@')) return false
         if (password.length < 6) return false
+        if (!/[0-9]/.test(password)) return false
+        if (!/[A-Z]/.test(password)) return false
         if (!isLogin && password !== confirmPassword) return false
         if (!isLogin && name.trim() === '') return false
         return true
