@@ -28,9 +28,9 @@ export default function Exercises() {
     const CATEGORIES = ['All', 'Chest', 'Back', 'Shoulders', 'Upper Arms', 'Upper Legs', 'Waist', 'Lower Legs', 'Lower Arms']
 
     const difficultyClasses = {
-        BEGINNER:     { bg: 'bg-teal-bg',  text: 'text-teal' },
+        BEGINNER: { bg: 'bg-teal-bg', text: 'text-teal' },
         INTERMEDIATE: { bg: 'bg-amber-bg', text: 'text-amber' },
-        ADVANCED:     { bg: 'bg-red-bg',   text: 'text-red' },
+        ADVANCED: { bg: 'bg-red-bg', text: 'text-red' },
     }
 
     useEffect(() => {
@@ -90,18 +90,31 @@ export default function Exercises() {
                         className="bg-bg-card border-half rounded-xl overflow-hidden flex flex-col cursor-pointer hover:border-half-purple transition-colors h-full"
                     >
                         {/* GIF */}
-                        <div className="h-40 bg-border-light flex items-center justify-center">
+                        <div className="h-40 bg-border-light flex items-center justify-center overflow-hidden">
                             {exercise.gifUrl ? (
-                                <img
-                                    src={exercise.gifUrl}
-                                    alt={exercise.name}
-                                    className="w-full h-full object-cover"
-                                />
+                                <>
+                                    <img
+                                        src={exercise.gifUrl}
+                                        alt={exercise.name}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            e.target.style.display = 'none'
+                                            e.target.nextSibling.style.display = 'flex'
+                                        }}
+                                    />
+                                    <div className="hidden w-full h-full flex-col items-center justify-center gap-1.5 text-text-muted">
+                                        <span className="text-3xl">🏋️</span>
+                                        <span className="text-xs">No preview</span>
+                                    </div>
+                                </>
                             ) : (
-                                <span className="text-text-muted">▶</span>
+                                <div className="flex flex-col items-center justify-center gap-1.5 text-text-muted">
+                                    <span className="text-3xl">🏋️</span>
+                                    <span className="text-xs">No preview</span>
+                                </div>
                             )}
                         </div>
-
+                        
                         <div className="p-3 flex flex-col flex-1">
                             {/* Name */}
                             <div className="font-semibold text-text-primary text-sm mb-2">

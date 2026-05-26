@@ -7,9 +7,9 @@ import SetHistoryList from '../../ui/SetHistoryList'
 import AddExerciseToWorkoutModal from '../../ui/WorkoutModalComponents/AddExerciseToWorkoutModal'
 
 const difficultyClasses = {
-    BEGINNER:     { bg: 'bg-teal-bg',  text: 'text-teal' },
+    BEGINNER: { bg: 'bg-teal-bg', text: 'text-teal' },
     INTERMEDIATE: { bg: 'bg-amber-bg', text: 'text-amber' },
-    ADVANCED:     { bg: 'bg-red-bg',   text: 'text-red' },
+    ADVANCED: { bg: 'bg-red-bg', text: 'text-red' },
 }
 
 export default function ExerciseDetail() {
@@ -70,13 +70,26 @@ export default function ExerciseDetail() {
                 {/* GIF */}
                 <div className="w-28 h-28 bg-bg-input border-half rounded-lg flex-shrink-0 overflow-hidden">
                     {exercise.gifUrl ? (
-                        <img
-                            src={exercise.gifUrl}
-                            alt={exercise.name}
-                            className="w-full h-full object-cover"
-                        />
+                        <>
+                            <img
+                                src={exercise.gifUrl}
+                                alt={exercise.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    e.target.style.display = 'none'
+                                    e.target.nextSibling.style.display = 'flex'
+                                }}
+                            />
+                            <div className="hidden w-full h-full flex-col items-center justify-center gap-1 text-text-muted">
+                                <span className="text-2xl">🏋️</span>
+                                <span className="text-xs">No preview</span>
+                            </div>
+                        </>
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-text-muted">▶</div>
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-text-muted">
+                            <span className="text-2xl">🏋️</span>
+                            <span className="text-xs">No preview</span>
+                        </div>
                     )}
                 </div>
 
@@ -134,8 +147,8 @@ export default function ExerciseDetail() {
                 <div className="bg-bg-card border-half rounded-xl px-4 py-3.5 flex gap-3">
                     {[
                         { val: `${pr.weight}kg`, lbl: 'Best weight' },
-                        { val: pr.reps,          lbl: 'Best reps' },
-                        { val: sets.length,      lbl: 'Total sets' },
+                        { val: pr.reps, lbl: 'Best reps' },
+                        { val: sets.length, lbl: 'Total sets' },
                     ].map(({ val, lbl }) => (
                         <div key={lbl} className="flex-1 bg-bg-input border-half rounded-lg px-3 py-2.5 text-center">
                             <div className="font-semibold text-teal">{val}</div>
