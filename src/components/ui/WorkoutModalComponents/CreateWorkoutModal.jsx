@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { apiClient } from '../../../lib/ApiClient'
+import { apiClient } from '../../../lib/apiClient'
 import { useAuth } from '../../context/AuthContext'
 
 const inputClass = "w-full bg-bg-input border-half rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"

@@ -17,6 +17,7 @@ import ProtectedRoute from './components/layout/ProtectedRoute'
 import NotFound from './components/pages/NotFound'
 import LogDetail from './components/pages/log/LogDetail'
 
+
 export default function App() {
   return (
       <BrowserRouter>

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { apiClient } from '../../../lib/ApiClient'
+import { apiClient } from '../../../lib/apiClient'
 import { useNavigate } from "react-router-dom"
 import { useAuth } from '../../context/AuthContext'
 

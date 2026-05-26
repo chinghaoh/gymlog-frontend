@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { apiClient } from '../../../lib/ApiClient'
+import { apiClient } from '../../../lib/apiClient'
 
 export default function ResetPassword() {
     const [searchParams] = useSearchParams()

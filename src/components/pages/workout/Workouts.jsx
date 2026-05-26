@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { apiClient } from '../../../lib/ApiClient'
+import { apiClient } from '../../../lib/apiClient'
 import { useAuth } from '../../context/AuthContext'
 import CreateWorkoutModal from '../../ui/WorkoutModalComponents/CreateWorkoutModal'
 import WorkoutView from '../workout/WorkoutView'

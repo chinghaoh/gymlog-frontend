@@ -1,6 +1,6 @@
 import FilterPills from '../../ui/FilterPills'
 import Pagination from '../../ui/Pagination'
-import { apiClient } from '../../../lib/ApiClient'
+import { apiClient } from '../../../lib/apiClient'
 import { useNavigate } from 'react-router-dom'
 import LogCard from './LogCard'
 import LogTable from './LogTable'

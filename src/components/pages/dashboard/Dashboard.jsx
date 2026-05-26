@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "../../context/AuthContext"
-import { apiClient } from "../../../lib/ApiClient"
+import { apiClient } from "../../../lib/apiClient"
 import { NavLink, useNavigate } from "react-router-dom"
 import ActivityCalendar from "../../ui/ActivityCalendar"
 import LogWorkoutModal from "../../ui/WorkoutModalComponents/LogWorkoutModal"

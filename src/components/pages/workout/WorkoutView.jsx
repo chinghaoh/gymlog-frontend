@@ -1,5 +1,5 @@
 import { useAuth } from '../../context/AuthContext'
-import { apiClient } from '../../../lib/ApiClient'
+import { apiClient } from '../../../lib/apiClient'
 import { useState, useEffect } from 'react'
 import FilterPills from '../../ui/FilterPills'
 import Pagination from '../../ui/Pagination'
