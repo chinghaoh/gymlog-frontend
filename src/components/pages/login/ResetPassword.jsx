@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { apiClient } from '../../../lib/apiClient'
+import { apiClient } from '../../../lib/piClient'
 
 export default function ResetPassword() {
     const [searchParams] = useSearchParams()
@@ -13,15 +13,16 @@ export default function ResetPassword() {
 
     const token = searchParams.get('token')
 
+    const validate = () => {
+        if (newPassword.length < 6) { setError('Password must be at least 6 characters.'); return false }
+        if (!/[0-9]/.test(newPassword)) { setError('Password must contain at least one digit.'); return false }
+        if (!/[A-Z]/.test(newPassword)) { setError('Password must contain at least one uppercase letter.'); return false }
+        if (newPassword !== confirmPassword) { setError('Passwords do not match.'); return false }
+        return true
+    }
+
     const handleSubmit = async () => {
-        if (newPassword.length < 6) {
-            setError('Password must be at least 6 characters.')
-            return
-        }
-        if (newPassword !== confirmPassword) {
-            setError('Passwords do not match.')
-            return
-        }
+        if (!validate()) return
 
         setLoading(true)
         setError('')
@@ -41,52 +42,44 @@ export default function ResetPassword() {
     }
 
     return (
-        <div className="min-h-screen bg-bg-page flex items-center justify-center p-8">
-            <div className="bg-bg-card border-half rounded-xl p-8 w-full max-w-sm">
+        <div className="min-h-screen bg-bg-page flex items-center justify-center">
+            <div className="bg-bg-card border border-border rounded-xl p-8 w-full max-w-sm">
 
                 {/* Logo */}
-                <div className="flex items-center justify-center gap-2 mb-8">
-                    <div className="w-7 h-7 bg-purple rounded-md flex items-center justify-center text-white font-bold text-sm">
-                        G
-                    </div>
-                    <span className="text-text-primary font-semibold text-base">GymLog</span>
+                <div className="flex items-center justify-center gap-2 mb-6">
+                    <div className="w-7 h-7 bg-purple rounded-md flex items-center justify-center text-white font-bold text-sm">G</div>
+                    <span className="text-text-primary font-semibold">GymLog</span>
                 </div>
 
                 <div className="font-semibold text-text-primary mb-1.5">Reset password</div>
-                <div className="text-text-muted text-sm mb-6">
-                    Enter your new password below.
-                </div>
+                <div className="text-text-muted text-sm mb-6">Enter your new password below.</div>
 
-                <div className="mb-4">
-                    <label className="block text-xs text-text-muted mb-2">New password</label>
-                    <input
-                        type="password"
-                        value={newPassword}
-                        onChange={e => { setNewPassword(e.target.value); setError('') }}
-                        placeholder="Min. 6 characters"
-                        className="w-full bg-bg-input border-half rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
-                    />
-                </div>
+                <label className="block text-text-muted text-sm mb-1.5">New password</label>
+                <input
+                    type="password"
+                    value={newPassword}
+                    onChange={e => { setNewPassword(e.target.value); setError('') }}
+                    placeholder="Min. 6 characters, 1 digit, 1 uppercase"
+                    className="w-full bg-bg-input border border-border rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-purple transition-colors mb-3"
+                />
 
-                <div className="mb-4">
-                    <label className="block text-xs text-text-muted mb-2">Confirm password</label>
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={e => { setConfirmPassword(e.target.value); setError('') }}
-                        placeholder="Confirm your password"
-                        className="w-full bg-bg-input border-half rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-half-purple transition-colors"
-                    />
-                </div>
+                <label className="block text-text-muted text-sm mb-1.5">Confirm password</label>
+                <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={e => { setConfirmPassword(e.target.value); setError('') }}
+                    placeholder="Confirm your password"
+                    className="w-full bg-bg-input border border-border rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-purple transition-colors mb-3"
+                />
 
                 {error && (
-                    <div className="text-red text-xs mb-4 px-3 py-2 bg-red-bg rounded-md">
+                    <div className="text-red text-sm mb-3 px-3 py-2 bg-red-bg rounded-lg">
                         {error}
                     </div>
                 )}
 
                 {success && (
-                    <div className="text-teal text-xs mb-4 px-3 py-2 bg-teal-bg rounded-md">
+                    <div className="text-teal text-sm mb-3 px-3 py-2 bg-teal-bg rounded-lg">
                         {success}
                     </div>
                 )}
@@ -94,15 +87,11 @@ export default function ResetPassword() {
                 <button
                     onClick={handleSubmit}
                     disabled={loading}
-                    className={`w-full py-2.5 rounded-lg text-sm font-semibold border-none transition-opacity
-                        ${loading
-                            ? 'bg-border text-text-muted cursor-not-allowed'
-                            : 'bg-purple text-white cursor-pointer hover:opacity-90'
-                        }`}
+                    className={`w-full border-none rounded-lg py-2.5 text-sm font-semibold transition-opacity
+                        ${loading ? 'bg-border text-text-muted cursor-not-allowed' : 'bg-purple text-white cursor-pointer hover:opacity-90'}`}
                 >
                     {loading ? 'Resetting...' : 'Reset password'}
                 </button>
-
             </div>
         </div>
     )
